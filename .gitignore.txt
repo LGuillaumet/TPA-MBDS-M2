@@ -1,1 +1,1 @@
-fichiers/
+fichiers/**
