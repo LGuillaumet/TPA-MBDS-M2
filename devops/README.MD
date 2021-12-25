@@ -27,6 +27,10 @@ Website : http://localhost:3040
 - bash : docker exec -it kafka /bin/bash
 - confluent : cd /opt/landoop/kafka/bin
 
+### Clients 
+
+- .Net : https://github.com/confluentinc/confluent-kafka-dotnet
+
 ## Databases
 
 - Mongodb port 27017
@@ -43,6 +47,9 @@ https://fr.wikipedia.org/wiki/Presto_(moteur_de_requ%C3%AAte_SQL)
 Presto est un projet distribué sous licence Apache, qui consiste en un moteur de requête SQL optimisé pour les interactions temps réel.
 
 Permet le requêtage et jointure de données entre toutes les databases. 
+
+Documentation : https://prestodb.io/docs/current/
+Ressources : https://prestodb.io/resources.html
 
 ### CMD
 
@@ -69,6 +76,12 @@ Example :
 - select * from mongodb.datalake.clients;
 - select * from mongodb.datalake.clients m left join cassandra.datalake.registration c on m.immatriculation = c.id;
 
+### Clients 
+
+- R: https://github.com/prestodb/RPresto
+- Java : https://prestodb.io/docs/current/installation/jdbc.html 
+- Node : https://github.com/tagomoris/presto-client-node
+- .NET : https://github.com/bamcis-io/PrestoClient
 
 
 
