@@ -1,0 +1,1 @@
+devops/containers/kafka/connectors/libs/*.jar filter=lfs diff=lfs merge=lfs -text

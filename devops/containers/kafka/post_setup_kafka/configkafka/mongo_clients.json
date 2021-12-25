@@ -1,0 +1,15 @@
+{
+    "name": "mongo_clients",
+    "config": {
+        "connector.class": "com.datamountaineer.streamreactor.connect.mongodb.sink.MongoSinkConnector",
+        "topics": "upserts-clients-mongo",
+        "tasks.max": "1",
+        "connect.mongo.connection": "mongodb://mongodb:27017",
+        "connect.mongo.db": "datalake",
+        "connect.mongo.kcql": "INSERT INTO clients SELECT * FROM upserts-clients-mongo",
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable": false,
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable": false
+    }
+}

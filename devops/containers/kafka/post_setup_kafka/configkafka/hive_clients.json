@@ -1,0 +1,20 @@
+{
+    "name": "hive_clients",
+    "config": {
+        "connector.class": "com.landoop.streamreactor.connect.hive.sink.HiveSinkConnector",
+        "tasks.max": "1",
+        "topics": "upserts-clients-hive",
+        "connect.hive.kcql": "INSERT INTO clients SELECT * FROM upserts-clients-hive PARTITION_BY state WITH_FLUSH_INTERVAL = 10",
+        "connect.hive.database.name": "datalake",
+        "connect.hive.metastore": "thrift",
+        "connect.hive.metastore.uris": "thrift://hive-metastore:9083",
+        "connect.hive.fs.defaultFS": "hdfs://namenode:9000",
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable": false,
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable": false,
+        "transforms": "Cast",
+        "transforms.Cast.spec": "age:int64,taux:int64,nbChildren:int64",
+        "transforms.Cast.type": "org.apache.kafka.connect.transforms.Cast$Value"
+    }
+}
