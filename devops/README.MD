@@ -1,5 +1,9 @@
 # Devops
 
+- cd containers
+- docker-compose build
+- docker-compose up / docker-compose up -d
+
 ## Kafka 
 
 https://fr.wikipedia.org/wiki/Apache_Kafka
@@ -60,9 +64,10 @@ Permet le requêtage et jointure de données entre toutes les databases.
     - catalogue
 
 Example : 
-    - docker exec -it presto  presto-cli
-    - select * from mongodb.datalake.clients;
-    - select * from mongodb.datalake.clients m left join cassandra.datalake.registration c on m.immatriculation = c.id;
+
+- docker exec -it presto  presto-cli
+- select * from mongodb.datalake.clients;
+- select * from mongodb.datalake.clients m left join cassandra.datalake.registration c on m.immatriculation = c.id;
 
 
 
