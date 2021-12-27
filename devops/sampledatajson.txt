@@ -1,7 +1,0 @@
-{ "age": 13, "sexe":"F", "taux":4,  "situation":"Celibataire", "nbChildren":4, "haveSecondCar": false, "immatriculation":"immatriculation"}
-
-
-{"id": "3721 QS 49","marque": "Volvo","nom": "S80 T6","puissance": 272,"longueur": "très longue","nbPlaces": 5, "nbPortes": 5,"couleur": "noir","occasion": false,"prix":50500}
-
-
-{ "marque": "Volvo","nom": "S80 T6","puissance": 272,"longueur": "très longue","nbPlaces": 5, "nbPortes": 5,"couleur": "noir","occasion": false,"prix":50500 }

@@ -1,8 +1,15 @@
 # Devops
 
-- cd containers
-- docker-compose build
-- docker-compose up / docker-compose up -d
+- Docker / Docker-compose : https://docs.docker.com/compose/install/
+
+## Setup
+
+- Start docker services :
+    - cd containers
+    - docker-compose build
+    - docker-compose up
+    - kafka ui : http://localhost:3040
+    - presto ui : http://localhost:8080
 
 ## Kafka 
 
