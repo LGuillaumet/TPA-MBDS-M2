@@ -18,10 +18,28 @@ presto_jdbc <- dbConnect(
   SSL = TRUE
 )
 
-customer <- dbGetQuery(presto_jdbc, "select * from (select distinct puissance, longueur, nbPortes, nbPlaces, prix from cassandra.datalake.registration) union distinct (select distinct puissance, longueur, nbPortes, nbPlaces, prix from hive.datalake.catalogue)")
-print(customer)
+union <- dbGetQuery(presto_jdbc, "select * from (select distinct puissance, longueur, nbPortes, nbPlaces, prix from cassandra.datalake.registration) union distinct (select distinct puissance, longueur, nbPortes, nbPlaces, prix from hive.datalake.catalogue)")
+print(union)
+
+count <- dbGetQuery(presto_jdbc, "select count(*) from cassandra.datalake.registration")
+print(count)
+
+clientConcat <- dbGetQuery(presto_jdbc, "select age, sexe, taux, situation, nbChildren, havesecondcar, immatriculation 
+                                          from hive.datalake.clients union distinct select age, sexe, taux, situation, nbChildren, havesecondcar, registrationId from mongodb.datalake.clients")
+print(count)
+
+desc <- dbGetQuery(presto_jdbc, "describe hive.datalake.clients")
+desc <- dbGetQuery(presto_jdbc, "describe mongodb.datalake.clients")
 
 dbDisconnect(presto_jdbc)
 
 # coonect hdfs hadoop ? 
 #https://github.com/RevolutionAnalytics/RHadoop/wiki/user%3Erhdfs%3EHome
+
+# Tables
+# cassandra.datalake.marketing
+# cassandra.datalake.registration
+# hive.datalake.catalogue
+# hive.datalake.clients
+# mongodb.datalake.carbon
+# mongodb.datalake.clients

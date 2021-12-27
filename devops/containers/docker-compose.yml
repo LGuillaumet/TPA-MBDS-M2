@@ -82,7 +82,7 @@ services:
       - '9042:9042'
     volumes:
       - ./datas/cassandra/cassandradata:/bitnami
-      - ./cassandra/dbschema:/docker-entrypoint-initdb.d/
+      - ./cassandra/init_cassandra:/docker-entrypoint-initdb.d/
     healthcheck:
       test: [ "CMD", "/opt/bitnami/cassandra/bin/cqlsh", "-u cassandra", "-p cassandra" ,"-e \"describe keyspaces\"" ]
       interval: 15s
@@ -131,11 +131,11 @@ services:
       ZK_PORT: 3181
       WEB_PORT: 3040
       REGISTRY_PORT: 8081
-      POST_SETUP_FILE: /post_setup_kafka/init.sh
+      POST_SETUP_FILE: /init_kafka/init.sh
     restart: always
     volumes:
-      - ./kafka/post_setup_kafka:/post_setup_kafka
-      - ./kafka/connectors/libs/:/connectors/
+      - ./kafka/init_kafka:/init_kafka
+      - ./kafka/connectors/:/connectors/
     depends_on:
       - mongodb
       - cassandra

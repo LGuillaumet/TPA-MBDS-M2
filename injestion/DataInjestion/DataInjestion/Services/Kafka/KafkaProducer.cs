@@ -104,6 +104,7 @@ namespace DataInjestion.Services.Kafka
                     if (e.Error == ErrorCode.Local_QueueFull)
                     {
                         producer.Flush(TimeSpan.FromMilliseconds(flushWaitMs));
+                        Task.Delay(2000);
                     }
                     else
                     {
@@ -118,7 +119,6 @@ namespace DataInjestion.Services.Kafka
             {
                 cts?.Token.ThrowIfCancellationRequested();
                 producer.Flush(TimeSpan.FromMilliseconds(flushWaitMs));
-                PrintMessageRate(stopWatch, reportsReceived);
             }
 
             if (!errorReports.IsEmpty)

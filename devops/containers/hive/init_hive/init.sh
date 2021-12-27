@@ -32,7 +32,7 @@ function wait_for_it()
 
 wait_for_it "localhost:10000"
 
-echo "INITIALIZATION HIVE TABLE"
+echo "Initialisation hive tables"
 
-hive -f /initHive/tables.hql
+hive -f /init_hive/tables.hql
 

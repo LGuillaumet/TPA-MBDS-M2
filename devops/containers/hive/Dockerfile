@@ -20,7 +20,7 @@ RUN chmod +x /usr/local/bin/startup.sh
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY initHive /initHive
+COPY init_hive /init_hive
 
 EXPOSE 10000
 EXPOSE 10002
