@@ -2,24 +2,24 @@ CREATE KEYSPACE IF NOT EXISTS datalake WITH replication = {'class':'SimpleStrate
 USE datalake;
 
 CREATE TABLE IF NOT EXISTS registration (
-   id text PRIMARY KEY,
+   registrationId text PRIMARY KEY,
    marque text,
    nom text,
-   puissance varint,
+   puissance int,
    longueur text,
-   nbPlaces varint, 
-   nbPortes varint,
+   nbPlaces int, 
+   nbPortes int,
    couleur text,
    occasion boolean,
    prix decimal 
 );
 
 CREATE TABLE IF NOT EXISTS marketing (
-   id varint PRIMARY KEY,
-   age varint,
+   id text PRIMARY KEY,
+   age int,
    sexe text,
-   taux varint,
+   taux int,
    situation text,
-   nbChildren varint,
+   nbChildren int,
    haveSecondCar boolean
 );

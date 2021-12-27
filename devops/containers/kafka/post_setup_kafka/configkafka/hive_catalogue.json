@@ -2,9 +2,9 @@
     "name": "hive_catalogue",
     "config": {
         "connector.class": "com.landoop.streamreactor.connect.hive.sink.HiveSinkConnector",
-        "tasks.max": "1",
+        "tasks.max": "4",
         "topics": "upserts-catalogue-hive",
-        "connect.hive.kcql": "INSERT INTO catalogue SELECT * FROM upserts-catalogue-hive PARTITION_BY state WITH_FLUSH_INTERVAL = 10",
+        "connect.hive.kcql": "INSERT INTO catalogue SELECT * FROM upserts-catalogue-hive WITH_FLUSH_INTERVAL = 10",
         "connect.hive.database.name": "datalake",
         "connect.hive.metastore": "thrift",
         "connect.hive.metastore.uris": "thrift://hive-metastore:9083",
@@ -15,6 +15,6 @@
         "value.converter.schemas.enable": false,
         "transforms": "Cast",
         "transforms.Cast.type": "org.apache.kafka.connect.transforms.Cast$Value",
-        "transforms.Cast.spec": "puissance:int64,prix:float64"
+        "transforms.Cast.spec": "puissance:int64,prix:float64,nbPlaces:int64,nbPortes:int64"
     }
 }

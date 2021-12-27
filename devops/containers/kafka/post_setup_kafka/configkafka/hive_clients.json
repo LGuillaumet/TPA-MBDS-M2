@@ -2,9 +2,9 @@
     "name": "hive_clients",
     "config": {
         "connector.class": "com.landoop.streamreactor.connect.hive.sink.HiveSinkConnector",
-        "tasks.max": "1",
+        "tasks.max": "4",
         "topics": "upserts-clients-hive",
-        "connect.hive.kcql": "INSERT INTO clients SELECT * FROM upserts-clients-hive PARTITION_BY state WITH_FLUSH_INTERVAL = 10",
+        "connect.hive.kcql": "INSERT INTO clients SELECT * FROM upserts-clients-hive WITH_FLUSH_INTERVAL = 10",
         "connect.hive.database.name": "datalake",
         "connect.hive.metastore": "thrift",
         "connect.hive.metastore.uris": "thrift://hive-metastore:9083",

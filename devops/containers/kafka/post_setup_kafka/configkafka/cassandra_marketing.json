@@ -2,7 +2,7 @@
     "name": "cassandra_marketing",
     "config": {
         "connector.class": "com.datamountaineer.streamreactor.connect.cassandra.sink.CassandraSinkConnector",
-        "tasks.max": "1",
+        "tasks.max": "4",
         "topics": "upserts-marketing-cassandra",
         "connect.cassandra.kcql": "INSERT INTO marketing SELECT * FROM upserts-marketing-cassandra",
         "connect.cassandra.port": "9042",
