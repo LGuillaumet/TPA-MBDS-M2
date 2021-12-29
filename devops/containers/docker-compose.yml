@@ -163,6 +163,9 @@ services:
       - 7077:7077
     volumes:
       - ./spark/jars:/spark_jobs
+    depends_on:
+      - presto
+      - postgre-data
     
   spark-worker:
     build: ./spark
@@ -179,5 +182,25 @@ services:
     volumes:
       - ./spark/jars:/spark_jobs
     depends_on:
+      - presto
       - spark
+      - postgre-data
+
+  postgres-data:
+    image: postgres:latest
+    container_name: postgres-data
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5438:5432'
+    volumes: 
+      - ./datas/postgre:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - .postgre-data/sql/:/docker-entrypoint-initdb.d/
   
