@@ -26,6 +26,9 @@ services:
       SERVICE_PRECONDITION: "namenode:9870"
     depends_on:
       - namenode
+    ports:
+      - 9866:9866
+      - 9864:9864
 
   hive-server:
     build: ./hive
@@ -59,6 +62,7 @@ services:
     volumes:
       - ./datas/hive/metastore-postgresql/postgresql/data:/var/lib/postgresql/data
     depends_on:
+      - namenode
       - datanode
 
   mongodb:
@@ -73,6 +77,7 @@ services:
     volumes:
       - ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./datas/mongo/mongodata:/data/db
+    command: --bind_ip_all --auth
   
   cassandra:
     image: docker.io/bitnami/cassandra:latest
@@ -93,37 +98,22 @@ services:
       - CASSANDRA_PASSWORD_SEEDER=yes
       - CASSANDRA_PASSWORD=cassandra
 
-  presto:
-    image: ahanaio/prestodb-sandbox:latest
-    container_name: presto
-    ports:
-      - "8080:8080"
-      - "8443:8443"
-    depends_on:
-      - mongodb
-      - hive-metastore
-      - hive-metastore-postgresql
-      - namenode
-      - cassandra
-    volumes:
-      - ./presto/etc:/opt/presto-server/etc
-
   kafka:
     image: landoop/fast-data-dev:latest
     container_name: kafka
     ports:
-      - 3181:3181
+     # - 3181:3181
       - 3040:3040
-    # - 7081:7081
-      - 7082:7082
-      - 7083:7083
+     # - 7081:7081
+     # - 7082:7082
+     # - 7083:7083
       - 9092:9092
     environment:
       ADV_HOST: 127.0.0.1
       #CONNECTORS: jdbc,elastic,hbase
       RUNTESTS: 0
       SAMPLEDATA: 0
-      #KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+     # KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
       KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION: 1.6.0.Final
       BROKER_PORT: 9092
       REST_PORT: 7082
@@ -142,3 +132,52 @@ services:
       - namenode
       - hive-metastore
       - hive-metastore-postgresql
+
+  presto:
+    image: ahanaio/prestodb-sandbox:latest
+    container_name: presto
+    ports:
+      - "8080:8080"
+      #- "8443:8443"
+    volumes:
+      - ./presto/master:/opt/presto-server/etc
+      - ./presto/hiveConfig:/hiveConfig
+    depends_on:
+      - mongodb
+      - cassandra
+      - namenode
+      - hive-metastore
+      - hive-metastore-postgresql
+
+  spark:
+    build: ./spark
+    container_name: spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - 8081:8080
+      - 7077:7077
+    volumes:
+      - ./spark/jars:/spark_jobs
+    
+  spark-worker:
+    build: ./spark
+    container_name: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ./spark/jars:/spark_jobs
+    depends_on:
+      - spark
+  

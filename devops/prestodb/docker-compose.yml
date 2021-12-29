@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  presto:
+    image: ahanaio/prestodb-sandbox:latest
+    container_name: presto
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    extra_hosts:
+        - "mongodb hive-metastore hive-metastore-postgresql namenode datanode cassandra:192.168.1.23"
+    volumes:
+      - ./presto/master:/opt/presto-server/etc
+      - ./presto/hiveConfig:/hiveConfig

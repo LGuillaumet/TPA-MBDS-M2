@@ -2,7 +2,7 @@
     "name": "hive_catalogue",
     "config": {
         "connector.class": "com.landoop.streamreactor.connect.hive.sink.HiveSinkConnector",
-        "tasks.max": "4",
+        "tasks.max": "1",
         "topics": "upserts-catalogue-hive",
         "connect.hive.kcql": "INSERT INTO catalogue SELECT * FROM upserts-catalogue-hive WITH_FLUSH_INTERVAL = 10",
         "connect.hive.database.name": "datalake",

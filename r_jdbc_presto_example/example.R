@@ -21,15 +21,17 @@ presto_jdbc <- dbConnect(
 union <- dbGetQuery(presto_jdbc, "select * from (select distinct puissance, longueur, nbPortes, nbPlaces, prix from cassandra.datalake.registration) union distinct (select distinct puissance, longueur, nbPortes, nbPlaces, prix from hive.datalake.catalogue)")
 print(union)
 
-count <- dbGetQuery(presto_jdbc, "select count(*) from cassandra.datalake.registration")
+count <- dbGetQuery(presto_jdbc, "select registrationid from cassandra.datalake.registration")
 print(count)
 
 clientConcat <- dbGetQuery(presto_jdbc, "select age, sexe, taux, situation, nbChildren, havesecondcar, immatriculation 
                                           from hive.datalake.clients union distinct select age, sexe, taux, situation, nbChildren, havesecondcar, registrationId from mongodb.datalake.clients")
-print(count)
 
 desc <- dbGetQuery(presto_jdbc, "describe hive.datalake.clients")
 desc <- dbGetQuery(presto_jdbc, "describe mongodb.datalake.clients")
+
+co2 <- dbGetQuery(presto_jdbc, "select * from mongodb.datalake.carbon")
+
 
 dbDisconnect(presto_jdbc)
 

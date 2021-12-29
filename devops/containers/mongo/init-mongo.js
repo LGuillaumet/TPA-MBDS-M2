@@ -23,3 +23,5 @@ db.carbon.insert([
         "energiecost": 319
     }
 ]);
+
+db.clients.createIndex( { registrationId: 1 } )
