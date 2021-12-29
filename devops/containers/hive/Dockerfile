@@ -21,7 +21,7 @@ COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY init_hive /init_hive
-COPY presto-jdbc-0.266.1.jar /opt/hive/lib/
+
 EXPOSE 10000
 EXPOSE 10002
 
