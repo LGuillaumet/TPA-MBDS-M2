@@ -11,6 +11,7 @@
 
     <modules>
         <module>clients</module>
+        <module>cars</module>
     </modules>
 
     <properties>
@@ -34,11 +35,6 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.13</artifactId>
             <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-jdbc</artifactId>
-            <version>350</version>
         </dependency>
     </dependencies>
 

@@ -2,19 +2,48 @@ package org.mbds.clients;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.*;
+import org.mbds.clients.dto.ClientDto;
+import org.mbds.clients.entities.ClientEntity;
+import scala.Tuple2;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.spark.sql.functions.monotonically_increasing_id;
 
 /***
  * https://github.com/spirom/learning-spark-with-java/blob/master/src/main/java/rdd/Basic.java
  */
 public class Main {
+
+    private static String clientQuery = "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
+            "from mongodb.datalake.clients" + " " +
+            "union distinct" + " " +
+            "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
+            "from hive.datalake.clients";
+
+    private static final String[][] collectionSexe = new String[][] {
+            { "Femme", "F" },
+            { "F", "F" },
+            { "Féminin", "F" },
+            { "Homme", "M" },
+            { "M", "M" },
+            { "Masculin", "M" }
+    };
+
+    private static final String[][] collectionSituation = new String[][] {
+            { "En Couple", "Couple" },
+            { "Divorcé", "Divorced" },
+            { "Célibataire", "Single" },
+            { "Seul", "Single" },
+            { "Seule", "Single" },
+            { "Marié", "Married" }
+    };
+
+    private static final Map<String, String> mapSexe = Stream.of(collectionSexe).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+    private static final Map<String, String> mapSituation = Stream.of(collectionSituation).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
     public static void main(String[] args) {
         //
@@ -38,81 +67,67 @@ public class Main {
                 .config(configuration)
                 .getOrCreate();
 
-        Properties connectionProperties = new Properties();
-        connectionProperties.put("driver", "com.facebook.presto.jdbc.PrestoDriver");
-        connectionProperties.put("user", "username");
-        connectionProperties.put("password", "password");
-        Dataset<Row> jdbcDF2 = spark.read().jdbc("jdbc:presto://presto:8080", "mongodb.datalake.clients", connectionProperties);
 
-        //
-        // Operating on a raw RDD actually requires access to the more low
-        // level SparkContext -- get the special Java version for convenience
-        //
-        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
+        Dataset<ClientDto> dataset = spark.read()
+                .format("jdbc")
+                .option("url", "jdbc:presto://presto:8080")
+                .option("query", clientQuery)
+                .option("user", "user")
+                .option("driver", "com.facebook.presto.jdbc.PrestoDriver")
+                .load()
+                .withColumn("id", monotonically_increasing_id())
+                .as(Encoders.bean(ClientDto.class));
 
-        // put some data in an RDD
-        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        //
-        // Since this SparkContext is actually a JavaSparkContext, the methods
-        // return a JavaRDD, which is more convenient as well.
-        //
-        JavaRDD<Integer> numbersRDD = sc.parallelize(numbers, 4);
-        System.out.println("*** Print each element of the original RDD");
-        System.out.println("*** (they won't necessarily be in any order)");
-        // Since printing is delegated to the RDD it happens in parallel.
-        // For versions of Java without lambda, Spark provides some utility
-        // interfaces like VoidFunction.
-        numbersRDD.foreach(i -> System.out.println(i));
+        dataset.printSchema();
+        dataset.show(false);
 
-        // NOTE: in the above it may be tempting to replace the above
-        // lambda expression with a method reference -- System.out::println --
-        // but alas this results in
-        //     java.io.NotSerializableException: java.io.PrintStream
+        JavaRDD<ClientDto> rdd = dataset.javaRDD();
 
-        // Transform the RDD element by element -- this time use Function
-        // instead of a Lambda. Notice how the RDD changes from
-        // JavaRDD<Integer> to JavaRDD<double>.
-        JavaRDD<Double> transformedRDD =
-                numbersRDD.map(n -> new Double(n) / 10);
+        JavaRDD<ClientEntity> rddEntity = rdd.map(Main::mapClient);
 
-        // let's see the elements
-        System.out.println("*** Print each element of the transformed RDD");
-        System.out.println("*** (they may not even be in the same order)");
-        transformedRDD.foreach(i -> System.out.println(i));
+        Dataset<Row> result = spark.createDataFrame(rddEntity, ClientEntity.class);
+        result.show(false);
 
-        // get the data back out as a list -- collect() gathers up all the
-        // partitions of an RDD and constructs a regular List
-        List<Double> transformedAsList = transformedRDD.collect();
-        // interesting how the list comes out sorted but the RDD didn't
-        System.out.println("*** Now print each element of the transformed list");
-        System.out.println("*** (the list is in the same order as the original list)");
-        for (Double d : transformedAsList) {
-            System.out.println(d);
-        }
-
-        // explore RDD partitioning properties -- glom() keeps the RDD as
-        // an RDD but the elements are now lists of the original values --
-        // the resulting RDD has an element for each partition of
-        // the original RDD
-        JavaRDD<List<Double>> partitionsRDD = transformedRDD.glom();
-        System.out.println("*** We _should_ have 4 partitions");
-        System.out.println("*** (They can't be of equal size)");
-        System.out.println("*** # partitions = " + partitionsRDD.count());
-        // specifying the type of l is not required here but sometimes it's useful for clarity
-        partitionsRDD.foreach((List<Double> l) -> {
-            // A string for each partition so the output isn't garbled
-            // -- remember the RDD is still distributed so this function
-            // is called in parallel
-            StringBuffer sb = new StringBuffer();
-            for (Double d : l) {
-                sb.append(d);
-                sb.append(" ");
-            }
-            System.out.println(sb);
-        });
+        result.write()
+                .mode(SaveMode.Overwrite)
+                .option("truncate", true)
+                .format("jdbc")
+                .option("url", "jdbc:postgresql://postgres-data:5438/postgres")
+                .option("dbtable", "datawarehouse.clients")
+                .option("user", "postgres")
+                .option("password", "postgres")
+                .option("driver", "org.postgresql.Driver")
+                .save();
 
         spark.stop();
     }
 
+    private static ClientEntity mapClient(ClientDto client){
 
+        ClientEntity entity = new ClientEntity();
+
+        Integer age = Math.toIntExact(client.getAge());
+        String sexe = client.getSexe();
+        Integer taux = Math.toIntExact(client.getTaux());
+        String situation = client.getSituation();
+        Integer nbchildren = Math.toIntExact(client.getNbchildren());
+        boolean havesecondcar = client.isHavesecondcar();
+        String registrationid = client.getRegistrationid();
+
+        age = age <= 0 ? null : age;
+        sexe = mapSexe.get(sexe);
+        situation = mapSituation.get(situation);
+        nbchildren = nbchildren >= 0 ? nbchildren : null;
+
+        entity.setId(client.getId());
+        entity.setAge(age);
+        entity.setSexe(sexe);
+        entity.setTaux(taux);
+        entity.setSituation(situation);
+        entity.setNbchildren(nbchildren);
+        entity.setHavesecondcar(havesecondcar);
+        entity.setRegistrationid(registrationid);
+
+        return entity;
+    }
 }

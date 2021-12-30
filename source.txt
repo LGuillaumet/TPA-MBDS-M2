@@ -1,0 +1,14 @@
+
+
+Tuning docker :
+
+https://github.com/docker/for-win/issues/1936
+
+.wslconfig dans le dossier user 
+
+[wsl2]
+memory=8GB # Limits VM memory in WSL 2 
+processors=4 # Makes the WSL 2 VM use 4 virtual processors
+localhostForwarding=true # Boolean specifying if ports bound to wildcard or localhost in the WSL 2 VM should be connectable from the host via localhost:port.
+
+powershell admin : Restart-Service LxssManager
