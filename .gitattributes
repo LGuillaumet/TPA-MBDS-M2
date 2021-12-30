@@ -1,2 +1,4 @@
 devops/containers/kafka/connectors/*.jar filter=lfs diff=lfs merge=lfs -text
 devops/containers/spark/jars/*.jar filter=lfs diff=lfs merge=lfs -text
+devops/dba-hdfs/hadoop/upload_files/files/*.csv filter=lfs diff=lfs merge=lfs -text
+devops/datalake/kafka/connectors/*.jar filter=lfs diff=lfs merge=lfs -text
