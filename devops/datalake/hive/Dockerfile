@@ -27,14 +27,3 @@ EXPOSE 10002
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD startup.sh
-
-
-
-
-
-
-
-
-
-
-
