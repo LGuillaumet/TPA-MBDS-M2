@@ -31,7 +31,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        org.mbds.cars.Main
+                                        org.mbds.cars.org.mbds.co2.Main
                                     </mainClass>
                                 </manifest>
                             </archive>
