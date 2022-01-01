@@ -2,28 +2,28 @@ package org.mbds.clients.dto;
 
 public class ClientDto {
 
-    private long id;
-    private long age;
+    private Long id;
+    private Long age;
     private String sexe;
-    private long taux;
+    private Long taux;
     private String situation;
-    private long nbchildren;
-    private boolean havesecondcar;
+    private Long nbchildren;
+    private Boolean havesecondcar;
     private String registrationid;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getAge() {
+    public Long getAge() {
         return age;
     }
 
-    public void setAge(long age) {
+    public void setAge(Long age) {
         this.age = age;
     }
 
@@ -35,11 +35,11 @@ public class ClientDto {
         this.sexe = sexe;
     }
 
-    public long getTaux() {
+    public Long getTaux() {
         return taux;
     }
 
-    public void setTaux(long taux) {
+    public void setTaux(Long taux) {
         this.taux = taux;
     }
 
@@ -51,19 +51,19 @@ public class ClientDto {
         this.situation = situation;
     }
 
-    public long getNbchildren() {
+    public Long getNbchildren() {
         return nbchildren;
     }
 
-    public void setNbchildren(long nbchildren) {
+    public void setNbchildren(Long nbchildren) {
         this.nbchildren = nbchildren;
     }
 
-    public boolean isHavesecondcar() {
+    public Boolean getHavesecondcar() {
         return havesecondcar;
     }
 
-    public void setHavesecondcar(boolean havesecondcar) {
+    public void setHavesecondcar(Boolean havesecondcar) {
         this.havesecondcar = havesecondcar;
     }
 

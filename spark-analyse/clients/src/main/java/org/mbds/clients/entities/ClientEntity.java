@@ -10,7 +10,7 @@ public class ClientEntity implements Serializable {
     private Integer taux;
     private String situation;
     private Integer nbchildren;
-    private boolean havesecondcar;
+    private Boolean havesecondcar;
     private String registrationid;
 
     public long getId() {
@@ -61,11 +61,11 @@ public class ClientEntity implements Serializable {
         this.nbchildren = nbchildren;
     }
 
-    public boolean isHavesecondcar() {
+    public Boolean getHavesecondcar() {
         return havesecondcar;
     }
 
-    public void setHavesecondcar(boolean havesecondcar) {
+    public void setHavesecondcar(Boolean havesecondcar) {
         this.havesecondcar = havesecondcar;
     }
 
