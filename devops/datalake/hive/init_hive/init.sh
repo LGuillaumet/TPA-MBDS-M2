@@ -35,4 +35,3 @@ wait_for_it "localhost:10000"
 echo "Initialisation hive tables"
 
 hive -f /init_hive/tables.hql
-

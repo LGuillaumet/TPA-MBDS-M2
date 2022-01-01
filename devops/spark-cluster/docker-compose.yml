@@ -17,7 +17,7 @@ services:
     volumes:
       - ./spark/jars:/spark_jobs
     extra_hosts:
-      - "presto postgres-data:192.168.1.23"
+      - "presto postgres-data postgres-data-dba namenode-dba datanode-dba:192.168.1.98"
 
   spark-worker:
     build: ./spark
@@ -33,7 +33,7 @@ services:
     volumes:
       - ./spark/jars:/spark_jobs
     extra_hosts:
-      - "presto postgres-data:192.168.1.23"
+      - "presto postgres-data postgres-data-dba namenode-dba datanode-dba:192.168.1.98"
     depends_on:
       - spark
   

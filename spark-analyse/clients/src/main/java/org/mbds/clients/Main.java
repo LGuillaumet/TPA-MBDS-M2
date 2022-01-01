@@ -3,20 +3,33 @@ package org.mbds.clients;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.*;
+import org.apache.spark.sql.types.DataType;
 import org.mbds.clients.dto.ClientDto;
 import org.mbds.clients.entities.ClientEntity;
-import scala.Tuple2;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
+import static org.apache.spark.sql.types.DataTypes.*;
 
-/***
- * https://github.com/spirom/learning-spark-with-java/blob/master/src/main/java/rdd/Basic.java
- */
 public class Main {
+
+    public interface ISparkAction {
+        void handle(SparkSession spark);
+    }
+
+    static class ColumnDefinition{
+
+        public String sourceName;
+        public String finalName;
+        public DataType type;
+
+        public ColumnDefinition(String sourceName, String finalName, DataType type){
+            this.sourceName = sourceName;
+            this.finalName = finalName;
+            this.type = type;
+        }
+    }
 
     private static String clientQuery = "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
             "from mongodb.datalake.clients" + " " +
@@ -44,13 +57,21 @@ public class Main {
 
     private static final Map<String, String> mapSexe = Stream.of(collectionSexe).collect(Collectors.toMap(data -> data[0], data -> data[1]));
     private static final Map<String, String> mapSituation = Stream.of(collectionSituation).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+    private static final Map<String, ISparkAction> mapAction = new HashMap<>();
+    private static final List<ColumnDefinition> csvColumns = new ArrayList(Arrays.asList(
+            new ColumnDefinition("age", "age", LongType),
+            new ColumnDefinition("sexe", "sexe", StringType),
+            new ColumnDefinition("taux", "taux", LongType),
+            new ColumnDefinition("situationFamiliale", "situation", StringType),
+            new ColumnDefinition("nbEnfantsAcharge", "nbchildren", LongType),
+            new ColumnDefinition("2eme voiture", "havesecondcar", BooleanType),
+            new ColumnDefinition("immatriculation", "registrationid", StringType)
+    ));
 
     public static void main(String[] args) {
-        //
-        // The "modern" way to initialize Spark is to create a SparkSession
-        // although they really come from the world of Spark SQL, and Dataset
-        // and DataFrame.
-        //
+
+        mapAction.put("datalake", Main::datalakeTask);
+        mapAction.put("dba", Main::dbaTask);
 
         SparkConf configuration = new SparkConf()
                 .setAppName("Clients-job")
@@ -67,6 +88,49 @@ public class Main {
                 .config(configuration)
                 .getOrCreate();
 
+        if(args.length > 0){
+            ISparkAction sparkaction = mapAction.get(args[0]);
+            if(sparkaction != null){
+                sparkaction.handle(spark);
+            }
+        }
+
+        spark.stop();
+    }
+
+    private static void dbaTask(SparkSession spark){
+
+        Dataset<Row> dataset1 = spark.read()
+                .format("csv")
+                .option("header", "true")
+                .option("delimiter", ",")
+                .load("hdfs://namenode-dba:9000/user/hive/warehouse/dba.db/Clients_1.csv");
+
+        Dataset<Row> dataset9 = spark.read()
+                .format("csv")
+                .option("header", "true")
+                .option("delimiter", ",")
+                .load("hdfs://namenode-dba:9000/user/hive/warehouse/dba.db/Clients_9.csv");
+
+        Dataset<Row> dataset = dataset1.union(dataset9);
+
+        for(ColumnDefinition definition : csvColumns)  {
+            dataset = dataset.withColumnRenamed(definition.sourceName,definition.finalName);
+            dataset = dataset.withColumn(definition.finalName, dataset.col(definition.finalName).cast(definition.type));
+        }
+
+        dataset.printSchema();
+        dataset.show(false);
+
+        JavaRDD<ClientDto> rdd = dataset
+                .withColumn("id", monotonically_increasing_id())
+                .as(Encoders.bean(ClientDto.class))
+                .javaRDD();
+
+        handleTask(spark, rdd, "jdbc:postgresql://postgres-data-dba:5432/postgres");
+    }
+
+    private static void datalakeTask(SparkSession spark){
 
         Dataset<ClientDto> dataset = spark.read()
                 .format("jdbc")
@@ -81,7 +145,10 @@ public class Main {
         dataset.printSchema();
         dataset.show(false);
 
-        JavaRDD<ClientDto> rdd = dataset.javaRDD();
+        handleTask(spark, dataset.javaRDD(), "jdbc:postgresql://postgres-data:5438/postgres");
+    }
+
+    private static void handleTask(SparkSession spark, JavaRDD<ClientDto> rdd, String urlPostgre){
 
         JavaRDD<ClientEntity> rddEntity = rdd.map(Main::mapClient);
 
@@ -92,32 +159,30 @@ public class Main {
                 .mode(SaveMode.Overwrite)
                 .option("truncate", true)
                 .format("jdbc")
-                .option("url", "jdbc:postgresql://postgres-data:5438/postgres")
+                .option("url", urlPostgre)
                 .option("dbtable", "datawarehouse.clients")
                 .option("user", "postgres")
                 .option("password", "postgres")
                 .option("driver", "org.postgresql.Driver")
                 .save();
-
-        spark.stop();
     }
 
     private static ClientEntity mapClient(ClientDto client){
 
         ClientEntity entity = new ClientEntity();
 
-        Integer age = Math.toIntExact(client.getAge());
+        Integer age = longToInteger(client.getAge());
         String sexe = client.getSexe();
-        Integer taux = Math.toIntExact(client.getTaux());
+        Integer taux = longToInteger(client.getTaux());
         String situation = client.getSituation();
-        Integer nbchildren = Math.toIntExact(client.getNbchildren());
-        boolean havesecondcar = client.isHavesecondcar();
+        Integer nbchildren = longToInteger(client.getNbchildren());
+        Boolean havesecondcar = client.getHavesecondcar();
         String registrationid = client.getRegistrationid();
 
-        age = age <= 0 ? null : age;
+        age = age != null && age > 0 ? age : null;
         sexe = mapSexe.get(sexe);
         situation = mapSituation.get(situation);
-        nbchildren = nbchildren >= 0 ? nbchildren : null;
+        nbchildren = nbchildren != null && nbchildren >= 0 ? nbchildren : null;
 
         entity.setId(client.getId());
         entity.setAge(age);
@@ -129,5 +194,10 @@ public class Main {
         entity.setRegistrationid(registrationid);
 
         return entity;
+    }
+
+    private static Integer longToInteger(Long value){
+        if(value == null) return null;
+        return Math.toIntExact(value);
     }
 }

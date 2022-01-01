@@ -59,11 +59,11 @@ CREATE TABLE if not exists datawarehouse.carbon(
 	bonusmalus      float,
 	rejet           float,
 	coutenergie		float,
-	CONSTRAINT carbon_PK PRIMARY KEY (marque),
+	CONSTRAINT carbon_PK PRIMARY KEY (marque)
 )  WITHOUT OIDS;
 
 CREATE TABLE if not exists datawarehouse.carscategories(
-	puissance       integer
+	puissance       integer,
 	longueur 		VARCHAR (50),
 	nbplaces        integer,
 	nbportes    	integer,

@@ -69,3 +69,6 @@ data$categoryName <- ifelse(data$cluster == 1, 'longue5po5pl',
                                                ifelse(data$cluster == 4, 'courte5pl5po',
                                                       ifelse(data$cluster== 5,'courte5pl3po','longue7pl5po')))))
 View(data)
+
+#Export du fichier data qui comprend les clusters
+write.csv(data, "cluster.csv", row.names=F)

@@ -31,7 +31,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        org.mbds.clients.Main
+                                        org.mbds.clients.org.mbds.co2.Main
                                     </mainClass>
                                 </manifest>
                             </archive>
