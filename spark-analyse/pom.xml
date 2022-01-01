@@ -12,6 +12,7 @@
     <modules>
         <module>clients</module>
         <module>cars</module>
+        <module>co2</module>
     </modules>
 
     <properties>
