@@ -17,7 +17,6 @@ router.get('/marques', async (req, res) =>{
     res.json({ marques });
 });
 
-
 router.get('/filter', async (req, res) => {
     const { couleurs, portes, occasion, source } = req.query;
     const ret = {};
@@ -61,5 +60,101 @@ router.get('/filter', async (req, res) => {
     res.json(ret);
 });
  
+router.get('/lambda/:brand', async (req, res) =>{
+    const { brand } = req.params;
+
+    const cars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar').where({ marque: brand.toUpperCase() });
+    const ids = cars.map((c) => c.registrationid);
+
+    if (ids.length <= 0) {
+        res.json({ error: 'Marque non trouvée' });
+        return;
+    }
+
+    const splitArrayIntoChunksOfLen = (arr, len) =>{
+        var chunks = [], i = 0, n = arr.length;
+        while (i < n) {
+            chunks.push(arr.slice(i, i += len));
+        }
+        return chunks;
+    }
+
+    const arrays = splitArrayIntoChunksOfLen(ids, 10000);
+
+    const clients = await Promise.all(arrays.map(async (arr) => {
+        return knex('datawarehouse.clients').whereIn('registrationid', arr);
+    }));
+    const mergedClients = [].concat.apply([], clients);
+
+    let age = 0;
+    let nbAge = 0;
+
+    let sexeH = 0;
+    let nbSexe = 0;
+
+    let taux = 0;
+    let nbTaux = 0;
+
+    let situationSingle = 0;
+    let nbSituation = 0;
+
+    let nbChildren = 0;
+    let nbNbChildren = 0;
+
+    let haveSecondCar = 0;
+    let nbHaveSecondCar = 0;
+    
+
+    mergedClients.forEach((client) => {
+        if (client.age) {
+            age += client.age;
+            nbAge++;
+        }
+
+        if(client.sexe) {
+            if (client.sexe === 'M') {
+                sexeH++;
+            }
+            nbSexe++;
+        }
+
+        if (client.taux) {
+            taux += client.taux;
+            nbTaux++;
+        }
+
+        if(client.situation) {
+            nbSituation++;
+            if (client.situation === 'Single') {
+                situationSingle++;
+            }
+        }
+
+        if (client.nbchildren !== null || client.nbchildren !== undefined) {
+            nbNbChildren++;
+            nbChildren += client.nbchildren;
+        }
+
+        if (client.havesecondcar !== null || client.havesecondcar !== undefined) {
+            if (client.havesecondcar) {
+                haveSecondCar++;
+            }
+            haveSecondCar++;
+        }
+
+    });
+
+    const ret = {
+        age: age / nbAge,
+        sexe: sexeH / nbSexe * 100 >= 50 ? 'H' : 'F',
+        taux: taux / nbTaux,
+        situation: situationSingle / nbSituation * 100 >= 50 ? 'Single' : 'Married',
+        nbchildren: nbChildren / nbNbChildren,
+        havesecondcar: haveSecondCar / nbHaveSecondCar * 100 >= 50 ? true : false
+    }
+    
+
+    res.json({ ret });
+});
  
 module.exports = router;
