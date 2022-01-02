@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from "react-router-dom";
+
 import {
 	Collapse,
 	Navbar,
@@ -6,7 +8,6 @@ import {
 	NavbarBrand,
 	Nav,
 	NavItem,
-	NavLink,
 } from 'reactstrap';
 
 export const NavBar = () => {
@@ -22,13 +23,13 @@ export const NavBar = () => {
 				<Collapse isOpen={isOpen} navbar>
 					<Nav className="ml-auto" navbar>
 						<NavItem>
-							<NavLink href="/">Home</NavLink>
+							<Link to="/" replace >Home</Link> |{" "}
 						</NavItem>
 						<NavItem>
-							<NavLink href="/dataviz">DataViz</NavLink>
+							<Link to="/dataviz" replace >Data visualization</Link> |{" "}
 						</NavItem>
 						<NavItem>
-							<NavLink href="/about">About</NavLink>
+							<Link to="/about" replace >About</Link>
 						</NavItem>
 					</Nav>
 				</Collapse>
