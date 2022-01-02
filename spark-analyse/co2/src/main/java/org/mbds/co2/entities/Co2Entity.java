@@ -3,60 +3,51 @@ package org.mbds.co2.entities;
 import java.io.Serializable;
 
 public class Co2Entity implements Serializable {
-    private long id;
-    private String marquemodel;
-    private Integer bonusmalus;
-    private Integer rejection;
-    private Integer energiecost;
 
-    public long getId() {
-        return id;
+    private String marque;
+    private Double bonusmalus;
+    private Double rejet;
+    private Double coutenergie;
+
+    public String getMarque() {
+        return marque;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setMarque(String marque) {
+        this.marque = marque;
     }
 
-    public String getMarquemodel() {
-        return marquemodel;
-    }
-
-    public void setMarquemodel(String marquemodel) {
-        this.marquemodel = marquemodel;
-    }
-
-    public Integer getBonusmalus() {
+    public Double getBonusmalus() {
         return bonusmalus;
     }
 
-    public void setBonusmalus(Integer bonusmalus) {
+    public void setBonusmalus(Double bonusmalus) {
         this.bonusmalus = bonusmalus;
     }
 
-    public Integer getRejection() {
-        return rejection;
+    public Double getRejet() {
+        return rejet;
     }
 
-    public void setRejection(Integer rejection) {
-        this.rejection = rejection;
+    public void setRejet(Double rejet) {
+        this.rejet = rejet;
     }
 
-    public Integer getEnergiecost() {
-        return energiecost;
+    public Double getCoutenergie() {
+        return coutenergie;
     }
 
-    public void setEnergiecost(Integer energiecost) {
-        this.energiecost = energiecost;
+    public void setCoutenergie(Double coutenergie) {
+        this.coutenergie = coutenergie;
     }
 
     @Override
     public String toString() {
         return "Co2Entity{" +
-                "id=" + id +
-                ", marque=" + marquemodel +
+                ", marque=" + marque +
                 ", bonus=" + bonusmalus +
-                ", emissionCo2='" + rejection + '\'' +
-                ", coutEnergie=" + energiecost +
+                ", emissionCo2='" + rejet + '\'' +
+                ", coutEnergie=" + coutenergie +
                 '}';
     }
 }
