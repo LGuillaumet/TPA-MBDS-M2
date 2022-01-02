@@ -1,4 +1,5 @@
 fichiers/**
+database-front/**
 test_docker/hdfs/**
 test_docker/metastore-postgresql/**
 .vs-code/**
