@@ -1,9 +1,11 @@
-package org.mbds.clients.interfaces;
+package org.mbds.cars.interfaces;
 
-import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.sql.AnalysisException;
+import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.ClientDto;
+import org.mbds.cars.dto.CatalogueDto;
+import org.mbds.cars.dto.RegistrationDto;
 
 public interface ISparkTask {
-    void handleTask(SparkSession spark, JavaRDD<ClientDto> rdd, String urlPostgres);
+    void handleTask(SparkSession spark, Dataset<RegistrationDto> datasetRegistration, Dataset<CatalogueDto> datasetCatalogue, String urlPostgre) throws AnalysisException;
 }

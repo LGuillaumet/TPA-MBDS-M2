@@ -1,4 +1,4 @@
-package org.mbds.clients.models;
+package org.mbds.cars.models;
 
 import org.apache.spark.sql.types.DataType;
 

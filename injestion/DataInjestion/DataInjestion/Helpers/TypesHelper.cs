@@ -16,7 +16,7 @@ namespace DataInjestion.Helpers
             { "long", (typeof(long), default(long), new Func<object>(() => default(long))) },
             { "double", (typeof(double), default(double), new Func<object>(() => default(double))) },
             { "float", (typeof(float), default(float), new Func<object>(() => default(float))) },
-            { "guid", (typeof(string), default(string), new Func<object>(() => Guid.NewGuid().ToString()+"-"+ new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds())) }
+            { "guid", (typeof(string), default(string), new Func<object>(() => Guid.NewGuid().ToString())) }
         };
     }
 }

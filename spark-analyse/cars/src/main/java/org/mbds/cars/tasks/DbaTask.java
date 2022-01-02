@@ -1,13 +1,10 @@
-package org.mbds.clients.tasks;
+package org.mbds.cars.tasks;
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoders;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.ClientDto;
-import org.mbds.clients.interfaces.ISparkTask;
-import org.mbds.clients.models.ColumnDefinition;
+import org.apache.spark.sql.*;
+import org.mbds.cars.dto.CatalogueDto;
+import org.mbds.cars.dto.RegistrationDto;
+import org.mbds.cars.interfaces.ISparkTask;
+import org.mbds.cars.models.ColumnDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,52 +12,73 @@ import java.util.List;
 
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
 import static org.apache.spark.sql.types.DataTypes.*;
-import static org.apache.spark.sql.types.DataTypes.StringType;
-import static org.mbds.clients.config.JobConfiguration.*;
+import static org.mbds.cars.config.JobConfiguration.*;
 
 public class DbaTask {
 
     private DbaTask(){}
 
-    private static final List<ColumnDefinition> csvColumns = new ArrayList(Arrays.asList(
-            new ColumnDefinition("age", "age", LongType),
-            new ColumnDefinition("sexe", "sexe", StringType),
-            new ColumnDefinition("taux", "taux", LongType),
-            new ColumnDefinition("situationFamiliale", "situation", StringType),
-            new ColumnDefinition("nbEnfantsAcharge", "nbchildren", LongType),
-            new ColumnDefinition("2eme voiture", "havesecondcar", BooleanType),
-            new ColumnDefinition("immatriculation", "registrationid", StringType)
+    private static final List<ColumnDefinition> csvRegistrationColumns = new ArrayList(Arrays.asList(
+            new ColumnDefinition("immatriculation", "registrationid", StringType),
+            new ColumnDefinition("marque", "marque", StringType),
+            new ColumnDefinition("nom", "nom", StringType),
+            new ColumnDefinition("puissance", "puissance", LongType),
+            new ColumnDefinition("longueur", "longueur", StringType),
+            new ColumnDefinition("nbPlaces", "nbplaces", LongType),
+            new ColumnDefinition("nbPortes", "nbportes", LongType),
+            new ColumnDefinition("couleur", "couleur", StringType),
+            new ColumnDefinition("occasion", "occasion", BooleanType),
+            new ColumnDefinition("prix", "prix", DoubleType)
     ));
 
-    public static void task(SparkSession spark, ISparkTask sparkTask){
+    private static final List<ColumnDefinition> csvCatalogueColumns = new ArrayList(Arrays.asList(
+            new ColumnDefinition("marque", "marque", StringType),
+            new ColumnDefinition("nom", "nom", StringType),
+            new ColumnDefinition("puissance", "puissance", LongType),
+            new ColumnDefinition("longueur", "longueur", StringType),
+            new ColumnDefinition("nbPlaces", "nbplaces", LongType),
+            new ColumnDefinition("nbPortes", "nbportes", LongType),
+            new ColumnDefinition("couleur", "couleur", StringType),
+            new ColumnDefinition("occasion", "occasion", BooleanType),
+            new ColumnDefinition("prix", "prix", DoubleType)
+    ));
 
-        Dataset<Row> dataset1 = spark.read()
+    public static void task(SparkSession spark, ISparkTask sparkTask) throws AnalysisException {
+
+        Dataset<Row> datasetRegistration = spark.read()
                 .format("csv")
                 .option("header", "true")
                 .option("delimiter", ",")
-                .load(URL_HDFS_CLIENT_1);
+                .load(URL_HDFS_REGISTRATION);
 
-        Dataset<Row> dataset9 = spark.read()
+        Dataset<Row> datasetCatalogue = spark.read()
                 .format("csv")
                 .option("header", "true")
                 .option("delimiter", ",")
-                .load(URL_HDFS_CLIENT_9);
+                .load(URL_HDFS_CATALOGUE);
 
-        Dataset<Row> dataset = dataset1.union(dataset9);
-
-        for(ColumnDefinition definition : csvColumns)  {
-            dataset = dataset.withColumnRenamed(definition.sourceName,definition.finalName);
-            dataset = dataset.withColumn(definition.finalName, dataset.col(definition.finalName).cast(definition.type));
+        for(ColumnDefinition definition : csvRegistrationColumns)  {
+            datasetRegistration = datasetRegistration.withColumnRenamed(definition.sourceName,definition.finalName);
+            datasetRegistration = datasetRegistration.withColumn(definition.finalName, datasetRegistration.col(definition.finalName).cast(definition.type));
         }
 
-        dataset.printSchema();
-        dataset.show(false);
+        datasetRegistration = datasetRegistration.withColumn("id", monotonically_increasing_id().cast(StringType));
 
-        JavaRDD<ClientDto> rdd = dataset
-                .withColumn("id", monotonically_increasing_id())
-                .as(Encoders.bean(ClientDto.class))
-                .javaRDD();
+        datasetRegistration.printSchema();
+        datasetRegistration.show(false);
 
-        sparkTask.handleTask(spark, rdd, URL_HDFS_SAVE_POSTGRES);
+        for(ColumnDefinition definition : csvCatalogueColumns)  {
+            datasetCatalogue = datasetCatalogue.withColumnRenamed(definition.sourceName,definition.finalName);
+            datasetCatalogue = datasetCatalogue.withColumn(definition.finalName, datasetCatalogue.col(definition.finalName).cast(definition.type));
+        }
+
+        datasetCatalogue.printSchema();
+        datasetCatalogue.show(false);
+
+        sparkTask.handleTask(spark,
+                datasetRegistration.as(Encoders.bean(RegistrationDto.class)),
+                datasetCatalogue.as(Encoders.bean(CatalogueDto.class)),
+                URL_HDFS_SAVE_POSTGRES
+        );
     }
 }

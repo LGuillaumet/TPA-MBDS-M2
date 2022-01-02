@@ -2,7 +2,7 @@
     "name": "cassandra_registration",
     "config": {
         "connector.class": "com.datamountaineer.streamreactor.connect.cassandra.sink.CassandraSinkConnector",
-        "tasks.max": "2",
+        "tasks.max": "10",
         "topics": "upserts-registration-cassandra",
         "connect.cassandra.kcql": "INSERT INTO registration SELECT * FROM upserts-registration-cassandra",
         "connect.cassandra.port": "9042",

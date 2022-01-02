@@ -1,39 +1,38 @@
-package org.mbds.clients.tasks;
+package org.mbds.cars.tasks;
 
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoders;
-import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.ClientDto;
-import org.mbds.clients.interfaces.ISparkTask;
+import org.apache.spark.sql.*;
+import org.mbds.cars.dto.CatalogueDto;
+import org.mbds.cars.dto.RegistrationDto;
+import org.mbds.cars.interfaces.ISparkTask;
 
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
-import static org.mbds.clients.config.JobConfiguration.URL_DATALAKE_SAVE_POSTGRES;
-import static org.mbds.clients.config.JobConfiguration.URL_PRESTO;
+import static org.mbds.cars.config.JobConfiguration.URL_DATALAKE_SAVE_POSTGRES;
+import static org.mbds.cars.config.JobConfiguration.URL_PRESTO;
 
 public class DatalakeTask {
 
     private DatalakeTask(){}
 
-    private static final String clientQuery = "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
-            "from mongodb.datalake.clients" + " " +
-            "union distinct" + " " +
-            "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
-            "from hive.datalake.clients";
+    public static void task(SparkSession spark, ISparkTask sparkTask) throws AnalysisException {
+        Dataset<RegistrationDto> datasetRegistration = loadPrestoDataset(spark, "select * from cassandra.datalake.registration", null).as(Encoders.bean(RegistrationDto.class));
+        Dataset<CatalogueDto> datasetCatalogue = loadPrestoDataset(spark, "select * from hive.datalake.catalogue", "id").as(Encoders.bean(CatalogueDto.class));
 
-    public static void task(SparkSession spark, ISparkTask sparkTask){
-        Dataset<ClientDto> dataset = spark.read()
+        sparkTask.handleTask(spark, datasetRegistration, datasetCatalogue, URL_DATALAKE_SAVE_POSTGRES);
+    }
+
+    private static Dataset<Row> loadPrestoDataset(SparkSession spark, String query, String nameColId){
+        Dataset<Row> dataset = spark.read()
                 .format("jdbc")
                 .option("url", URL_PRESTO)
-                .option("query", clientQuery)
+                .option("query", query)
                 .option("user", "user")
                 .option("driver", "com.facebook.presto.jdbc.PrestoDriver")
-                .load()
-                .withColumn("id", monotonically_increasing_id())
-                .as(Encoders.bean(ClientDto.class));
+                .load();
 
-        dataset.printSchema();
-        dataset.show(false);
+        if(nameColId != null && !nameColId.equals("")){
+            dataset.withColumn(nameColId, monotonically_increasing_id());
+        }
 
-        sparkTask.handleTask(spark, dataset.javaRDD(), URL_DATALAKE_SAVE_POSTGRES);
+        return dataset;
     }
 }
