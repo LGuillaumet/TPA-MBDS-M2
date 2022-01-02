@@ -6,5 +6,10 @@ router.get('/colors', async (req, res) =>{
     const ret = await knex('datawarehouse.cars').distinct().pluck('couleur');
     res.json({ couleurs: ret });
 });
+
+router.get('/doors', async (req, res) =>{
+    const ret = await knex('datawarehouse.cars').distinct().pluck('nbportes');
+    res.json({ portes: ret });
+});
  
 module.exports = router;
