@@ -75,21 +75,33 @@ public class Main {
 
     private static void dbaTask(SparkSession spark){
 
-        Dataset<Row> dataset1 = spark.read()
+        Dataset<Row> datasetCO2 = spark.read()
                 .format("csv")
                 .option("header", "true")
                 .option("delimiter", ",")
                 .load("hdfs://namenode-dba:9000/user/hive/warehouse/dba.db/CO2.csv");
 
+        Dataset<Row> datasetCatalog = spark.read()
+                .format("csv")
+                .option("header", "true")
+                .option("delimiter", ",")
+                .load("hdfs://namenode-dba:9000/user/hive/warehouse/dba.db/Catalogue.csv");
+
+        Dataset<Row> datasetImmat = spark.read()
+                .format("csv")
+                .option("header", "true")
+                .option("delimiter", ",")
+                .load("hdfs://namenode-dba:9000/user/hive/warehouse/dba.db/Immatriculations.csv");
+
         for(ColumnDefinition definition : csvColumns)  {
-            dataset1 = dataset1.withColumnRenamed(definition.sourceName,definition.finalName);
-            dataset1 = dataset1.withColumn(definition.finalName, dataset1.col(definition.finalName).cast(definition.type));
+            datasetCO2 = datasetCO2.withColumnRenamed(definition.sourceName,definition.finalName);
+            datasetCO2 = datasetCO2.withColumn(definition.finalName, datasetCO2.col(definition.finalName).cast(definition.type));
         }
 
-        dataset1.printSchema();
-        dataset1.show(false);
+        datasetCO2.printSchema();
+        datasetCO2.show(false);
 
-        JavaRDD<Co2Dto> rdd = dataset1
+        JavaRDD<Co2Dto> rdd = datasetCO2
                 .withColumn("id", monotonically_increasing_id())
                 .as(Encoders.bean(Co2Dto.class))
                 .javaRDD();
