@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { knex } = require('../lib/knex/init');
 
+let source = "public";
+
+if (process.env.NODE_ENV !== 'production') {}
 router.get('/colors', async (req, res) =>{
     const ret = await knex('datawarehouse.cars').distinct().pluck('couleur');
     res.json({ couleurs: ret });
@@ -19,12 +22,12 @@ router.get('/marques', async (req, res) =>{
 
 router.get('/filter', async (req, res) => {
     const { couleurs, portes, occasion, source } = req.query;
-    const ret = {};
-    const colors = (couleurs || "").split(',');
-
-    if (!colors && colors?.length > 0 && !portes && !occasion && !source) {
-        res.json({ error: 'Vous devez renseigner au moins un critère de filtrage' });
-        return;
+    const ret = [];
+    const colors = (couleurs ? (couleurs).split(',') : null);
+    const doors = (portes ? (portes).split(',') : null);
+    console.log(couleurs, portes, occasion, source)
+    if (!couleurs && !portes && !occasion && !source) {
+        return res.json({ error: 'Vous devez renseigner au moins un critère de filtrage' });
     }
 
     const marques = await knex('datawarehouse.cars').distinct().pluck('marque');
@@ -40,21 +43,24 @@ router.get('/filter', async (req, res) => {
         cars = [...catalogueCars, ...registrationsCars];
     }
 
-    marques.forEach((marque) => {
+    marques.forEach((marque, index) => {
         let tmpCars = cars.filter((car) => car.marque === marque);
         const nbCarsByMarque = tmpCars.length || 1;
 
-        if (portes) {
-            tmpCars = tmpCars.filter((car) => car.nbportes === parseInt(portes, 10));
+        if (!!doors && doors?.length >= 1) {
+            tmpCars = tmpCars.filter((car) => doors.includes(car.nbportes.toString()));
         }
-        if (colors && colors?.length > 0) {
+        if (!!colors && colors?.length >= 1) {
             tmpCars = tmpCars.filter((car) => colors.includes(car.couleur));
         }
         if (occasion != undefined) {
             const occasionBool = occasion === 'true';
-            tmpCars = tmpCars.filter((car) => car.occasion === occasionBool); 
+            tmpCars = tmpCars.filter((car) => car.occasion === occasionBool);
         }
-        ret[marque] = (tmpCars.length / nbCarsByMarque) * 100;
+        ret[index] = {
+            marque: marque,
+            proportion: (tmpCars.length / nbCarsByMarque) * 100,
+        };
     });
 
     res.json(ret);
