@@ -9,6 +9,10 @@ import org.mbds.cars.entities.CarEntity;
 import org.mbds.cars.entities.CatalogueEntity;
 import org.mbds.cars.entities.RegistrationEntity;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
 
 public class CommonTask {
@@ -37,6 +41,11 @@ public class CommonTask {
             "car_entity.nbportes == catalogue.nbportes and " +
             "car_entity.couleur == catalogue.couleur");
 
+    private static final String[][] collectionMarque = new String[][] {
+            { "Hyundaè", "Hyundai" }
+    };
+    private static final Map<String, String> mapMarque = Stream.of(collectionMarque).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+
     public static void task(SparkSession spark, Dataset<RegistrationDto> datasetRegistration, Dataset<CatalogueDto> datasetCatalogue, String urlPostgre) throws AnalysisException {
 
         JavaRDD<RegistrationDto> rddR = datasetRegistration.javaRDD();
@@ -53,6 +62,14 @@ public class CommonTask {
                 .distinct()
                 .zipWithUniqueId()
                 .map(tuple -> { tuple._1.setId(tuple._2); return tuple._1;});
+
+        rddCarEntity = rddCarEntity.map(entity -> {
+            String base = entity.getMarque();
+            String marque = mapMarque.get(base);
+            marque = (marque != null ? marque : base).toUpperCase();
+            entity.setMarque(marque);
+            return entity;
+        });
 
         Dataset<CarEntity> datasetCarEntity = spark.createDataFrame(rddCarEntity, CarEntity.class).as(Encoders.bean(CarEntity.class));
 

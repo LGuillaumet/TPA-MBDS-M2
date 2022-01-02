@@ -2,9 +2,9 @@ version: '3'
 
 services:
 
-  spark:
+  spark-cluster:
     build: ./spark
-    container_name: spark
+    container_name: spark-cluster
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -19,7 +19,7 @@ services:
     extra_hosts:
       - "presto postgres-data postgres-data-dba namenode-dba datanode-dba:192.168.1.98"
 
-  spark-worker:
+  spark-worker-cluster:
     build: ./spark
     environment:
       - SPARK_MODE=worker
@@ -35,5 +35,4 @@ services:
     extra_hosts:
       - "presto postgres-data postgres-data-dba namenode-dba datanode-dba:192.168.1.98"
     depends_on:
-      - spark
-  
+      - spark-cluster

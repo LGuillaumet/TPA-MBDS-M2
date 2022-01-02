@@ -161,9 +161,45 @@ services:
         max-size: 10m
         max-file: "3"
     ports:
-      - '5438:5432'
+      - '5432:5432'
     volumes: 
       - ./datas/postgre:/var/lib/postgresql/data
       # copy the sql script to create tables
       - ./postgre-data/sql/:/docker-entrypoint-initdb.d/
+  
+  spark:
+    build: ../spark-cluster/spark
+    container_name: spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - 8081:8080
+      - 7077:7077
+    volumes:
+      - ../spark-cluster/spark/jars:/spark_jobs
+    depends_on:
+      - presto 
+      - postgres-data 
+
+  spark-worker:
+    build: ../spark-cluster/spark
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=4G
+      - SPARK_WORKER_CORES=4
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ../spark-cluster/spark/jars:/spark_jobs
+    depends_on:
+      - spark
+      - presto 
+      - postgres-data 
   

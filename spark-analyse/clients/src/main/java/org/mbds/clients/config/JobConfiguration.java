@@ -9,7 +9,5 @@ public class JobConfiguration {
     public static final String URL_HDFS_SAVE_POSTGRES = "jdbc:postgresql://postgres-data-dba:5432/postgres";
 
     public static final String URL_PRESTO = "jdbc:presto://presto:8080";
-    public static final String URL_DATALAKE_SAVE_POSTGRES = "jdbc:postgresql://postgres-data:5438/postgres";
-
-
+    public static final String URL_DATALAKE_SAVE_POSTGRES = "jdbc:postgresql://postgres-data:5432/postgres";
 }
