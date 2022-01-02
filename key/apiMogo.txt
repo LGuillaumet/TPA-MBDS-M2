@@ -1,4 +1,0 @@
-
-Cluster MongoDB
-Public Key zpubshfd
-Private Key f6f7eac2-68d6-4f5b-9560-b117eeda272b
