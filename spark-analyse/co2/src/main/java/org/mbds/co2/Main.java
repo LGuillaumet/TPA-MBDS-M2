@@ -13,6 +13,7 @@ import static org.apache.spark.sql.functions.*;
 import static org.apache.spark.sql.types.DataTypes.StringType;
 
 public class Main {
+
     public interface ISparkAction {
         void handle(SparkSession spark);
     }
@@ -31,6 +32,7 @@ public class Main {
     }
 
     private static final Map<String, ISparkAction> mapAction = new HashMap<>();
+
     private static String CO2Query = "select marquemodel, bonusmalus, rejection, energiecost" + " " +
             "from mongodb.datalake.carbon";
 
@@ -110,7 +112,7 @@ public class Main {
         dataset.printSchema();
         dataset.show(false);
 
-        handleTask(spark, dataset.javaRDD(), "jdbc:postgresql://postgres-data:5438/postgres");
+        handleTask(spark, dataset.javaRDD(), "jdbc:postgresql://postgres-data:5432/postgres");
     }
 
     private static void handleTask(SparkSession spark, JavaRDD<Co2Dto> rdd, String urlPostgre){
@@ -123,7 +125,11 @@ public class Main {
 
         Dataset<Row> resultGrouped = result
                 .groupBy("marque")
-                .agg(round(avg("bonusmalus"), 2), round(avg("coutenergie"), 2), round(avg("rejet"),2))
+                .agg(
+                        round(avg("bonusmalus"), 2),
+                        round(avg("coutenergie"), 2),
+                        round(avg("rejet"),2)
+                )
                 .withColumnRenamed("round(avg(bonusmalus), 2)","bonusmalus")
                 .withColumnRenamed("round(avg(coutenergie), 2)","coutenergie")
                 .withColumnRenamed("round(avg(rejet), 2)","rejet");
