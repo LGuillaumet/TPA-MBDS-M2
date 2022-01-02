@@ -154,7 +154,7 @@ router.get('/lambda/:brand', async (req, res) =>{
     }
     
 
-    res.json({ ret });
+    res.json(ret);
 });
  
 module.exports = router;
