@@ -63,14 +63,6 @@ public class CommonTask {
                 .zipWithUniqueId()
                 .map(tuple -> { tuple._1.setId(tuple._2); return tuple._1;});
 
-        rddCarEntity = rddCarEntity.map(entity -> {
-            String base = entity.getMarque();
-            String marque = mapMarque.get(base);
-            marque = (marque != null ? marque : base).toUpperCase();
-            entity.setMarque(marque);
-            return entity;
-        });
-
         Dataset<CarEntity> datasetCarEntity = spark.createDataFrame(rddCarEntity, CarEntity.class).as(Encoders.bean(CarEntity.class));
 
         datasetRegistration.createTempView("registration");
@@ -82,6 +74,16 @@ public class CommonTask {
         Dataset<CatalogueEntity> catalogueEntity = spark.sql(CAR_CATALOGUE_QUERY)
                 .withColumn("id", monotonically_increasing_id())
                 .as(Encoders.bean(CatalogueEntity.class));
+
+        rddCarEntity = rddCarEntity.map(entity -> {
+            String base = entity.getMarque();
+            String marque = mapMarque.get(base);
+            marque = (marque != null ? marque : base).toUpperCase();
+            entity.setMarque(marque);
+            return entity;
+        });
+
+        datasetCarEntity = spark.createDataFrame(rddCarEntity, CarEntity.class).as(Encoders.bean(CarEntity.class));
 
         registrationEntity.show(false);
         datasetCarEntity.show(false);

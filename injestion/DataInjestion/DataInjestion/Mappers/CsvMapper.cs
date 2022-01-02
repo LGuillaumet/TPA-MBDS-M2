@@ -15,16 +15,18 @@ namespace DataInjestion.Mappers
             config.FileHeaderConfiguration.HasHeaderRecord = configuration.FileHaveHeader;
             config.FileHeaderConfiguration.IgnoreHeader = true;
             config.Delimiter = configuration.FieldSeparator;
+            config.Encoding = System.Text.Encoding.UTF8;
+            config.QuoteAllFields = true;
 
-            foreach (var schema in configuration.JsonSchemas)
-            {
-                var t = TypesHelper.Types[schema.Type];
-                config.CSVRecordFieldConfigurations.Add(new ChoCSVRecordFieldConfiguration(schema.Name, schema.Position)
-                {
-                    FieldType = t.Type,
-                    DefaultValue = t.Default
-                });
-            }
+             foreach (var schema in configuration.JsonSchemas)
+             {
+                 var t = TypesHelper.Types[schema.Type];
+                 config.CSVRecordFieldConfigurations.Add(new ChoCSVRecordFieldConfiguration(schema.Name, schema.Position)
+                 {
+                     FieldType = t.Type,
+                     DefaultValue = t.Default
+                 });
+             }
 
             dynamic row = null;
             using (var parser = new ChoCSVReader(configuration.FilePathSource, config))
