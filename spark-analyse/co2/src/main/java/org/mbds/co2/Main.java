@@ -1,13 +1,17 @@
 package org.mbds.co2;
 
 import org.apache.spark.sql.types.DataType;
+import org.codehaus.janino.Java;
 import org.mbds.co2.dto.Co2Dto;
+import org.mbds.co2.dto.ValueDto;
 import org.mbds.co2.entities.Co2Entity;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.spark.sql.functions.*;
 import static org.apache.spark.sql.types.DataTypes.StringType;
@@ -35,6 +39,9 @@ public class Main {
 
     private static String CO2Query = "select marquemodel, bonusmalus, rejection, energiecost" + " " +
             "from mongodb.datalake.carbon";
+
+    private static String CatalogAndImmatQuery = "select marque" + " " + "from hive.datalake.catalog" + " " +
+            "union distinct" + " " + "select marque" + " " + "from cassandra.datalake.immatriculation";
 
     private static final List<ColumnDefinition> csvColumns = new ArrayList(Arrays.asList(
             new ColumnDefinition("Marque / Modele", "marquemodel", StringType),
@@ -98,20 +105,30 @@ public class Main {
             datasetCO2 = datasetCO2.withColumn(definition.finalName, datasetCO2.col(definition.finalName).cast(definition.type));
         }
 
-        datasetCO2.printSchema();
-        datasetCO2.show(false);
+        Dataset<Row> datasetCatalogMarque = datasetCatalog.select("marque").distinct();
+        Dataset<Row> datasetImmatMarque = datasetImmat.select("marque").distinct();
+        Dataset<Row> unionedMarque = datasetCatalogMarque.union(datasetImmatMarque).distinct();
+
+        unionedMarque = unionedMarque.withColumn("marque", when(col("marque").equalTo("Hyundaè"), "Hyundai").otherwise(col("marque")));
+        unionedMarque = unionedMarque.withColumn("marque", upper(col("marque")));
+
+        JavaRDD<Co2Entity> rddMarque = unionedMarque.javaRDD().map(row -> {
+           Co2Entity dto = new Co2Entity();
+           dto.setMarque(row.getAs("marque"));
+           return dto;
+        });
 
         JavaRDD<Co2Dto> rdd = datasetCO2
                 .withColumn("id", monotonically_increasing_id())
                 .as(Encoders.bean(Co2Dto.class))
                 .javaRDD();
 
-        handleTask(spark, rdd, "jdbc:postgresql://postgres-data-dba:5432/postgres");
+        handleTask(spark, rdd, "jdbc:postgresql://postgres-data-dba:5432/postgres", rddMarque);
     }
 
     private static void datalakeTask(SparkSession spark){
 
-        Dataset<Co2Dto> dataset = spark.read()
+        Dataset<Co2Dto> datasetCo2 = spark.read()
                 .format("jdbc")
                 .option("url", "jdbc:presto://presto:8080")
                 .option("query", CO2Query)
@@ -121,21 +138,36 @@ public class Main {
                 .withColumn("id", monotonically_increasing_id())
                 .as(Encoders.bean(Co2Dto.class));
 
-        dataset.printSchema();
-        dataset.show(false);
+        Dataset<Row> datasetImmatAndCatalog = spark.read()
+                .format("jdbc")
+                .option("url", "jdbc:presto://presto:8080")
+                .option("query", CatalogAndImmatQuery)
+                .option("user", "user")
+                .option("driver", "com.facebook.presto.jdbc.PrestoDriver")
+                .load()
+                .withColumn("id", monotonically_increasing_id());
 
-        handleTask(spark, dataset.javaRDD(), "jdbc:postgresql://postgres-data:5432/postgres");
+        datasetImmatAndCatalog = datasetImmatAndCatalog.withColumn("marque", when(col("marque").equalTo("Hyundaè"), "Hyundai").otherwise(col("marque")));
+        datasetImmatAndCatalog = datasetImmatAndCatalog.withColumn("marque", upper(col("marque")));
+
+        JavaRDD<Co2Entity> rddMarque = datasetImmatAndCatalog.javaRDD().map(row -> {
+            Co2Entity dto = new Co2Entity();
+            dto.setMarque(row.getAs("marque"));
+            return dto;
+        });
+
+        datasetImmatAndCatalog.printSchema();
+        datasetImmatAndCatalog.show();
+
+        handleTask(spark, datasetCo2.javaRDD(), "jdbc:postgresql://postgres-data:5432/postgres", rddMarque);
     }
 
-    private static void handleTask(SparkSession spark, JavaRDD<Co2Dto> rdd, String urlPostgre){
+    private static void handleTask(SparkSession spark, JavaRDD<Co2Dto> rdd, String urlPostgre, JavaRDD<Co2Entity> rddMarque){
 
         JavaRDD<Co2Entity> rddEntity = rdd.map(Main::mapCo2);
-
         Dataset<Row> result = spark.createDataFrame(rddEntity, Co2Entity.class);
 
-        result.show();
-
-        Dataset<Row> resultGrouped = result
+        Dataset<Co2Entity> resultGrouped = result
                 .groupBy("marque")
                 .agg(
                         round(avg("bonusmalus"), 2),
@@ -144,11 +176,46 @@ public class Main {
                 )
                 .withColumnRenamed("round(avg(bonusmalus), 2)","bonusmalus")
                 .withColumnRenamed("round(avg(coutenergie), 2)","coutenergie")
-                .withColumnRenamed("round(avg(rejet), 2)","rejet");
+                .withColumnRenamed("round(avg(rejet), 2)","rejet").as(Encoders.bean(Co2Entity.class));
 
+        Dataset<ValueDto> resultTest = resultGrouped.agg(
+                round(avg("bonusmalus"), 2),
+                round(avg("coutenergie"), 2),
+                round(avg("rejet"),2)
+        ).withColumnRenamed("round(avg(bonusmalus), 2)","bonusmalus")
+         .withColumnRenamed("round(avg(coutenergie), 2)","coutenergie")
+         .withColumnRenamed("round(avg(rejet), 2)","rejet").as(Encoders.bean(ValueDto.class));
+
+        ValueDto r = resultTest.first();
+        rddMarque = rddMarque.map(dto -> {
+            dto.setBonusmalus(r.getBonusmalus());
+            dto.setCoutenergie(r.getCoutenergie());
+            dto.setRejet(r.getRejet());
+            return dto;
+        });
+
+        Dataset<Co2Entity> resultMarque = spark.createDataFrame(rddMarque, Co2Entity.class).as(Encoders.bean(Co2Entity.class));
+        resultMarque = resultMarque
+                .join(
+                        resultGrouped,
+                        resultMarque.col("marque").equalTo(resultGrouped.col("marque")),
+                        "left_anti"
+                ).as(Encoders.bean(Co2Entity.class));
+
+        resultGrouped.printSchema();
         resultGrouped.show();
 
-        resultGrouped.write()
+        resultMarque = resultMarque.select("marque", "bonusmalus", "coutenergie", "rejet").as(Encoders.bean(Co2Entity.class));;
+
+        resultMarque.printSchema();
+        resultMarque.show();
+
+        Dataset<Co2Entity> unionedMarqueGrouped = resultGrouped.union(resultMarque).distinct();
+
+        unionedMarqueGrouped.printSchema();
+        unionedMarqueGrouped.show();
+
+       unionedMarqueGrouped.write()
                 .mode(SaveMode.Overwrite)
                 .option("truncate", true)
                 .format("jdbc")
