@@ -70,6 +70,7 @@ public class CommonTask {
 
         age = age != null && age > 0 ? age : null;
         sexe = mapSexe.get(sexe);
+        taux = taux != null && taux >= 0 ? taux : null;
         situation = mapSituation.get(situation);
         nbchildren = nbchildren != null && nbchildren >= 0 ? nbchildren : null;
 
