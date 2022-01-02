@@ -12,6 +12,12 @@ router.get('/doors', async (req, res) =>{
     res.json({ portes: ret });
 });
 
+router.get('/marques', async (req, res) =>{
+    const marques = await knex('datawarehouse.cars').distinct().pluck('marque');
+    res.json({ marques });
+});
+
+
 router.get('/filter', async (req, res) => {
     const { couleurs, portes, occasion, source } = req.query;
     const ret = {};
