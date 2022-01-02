@@ -22,6 +22,7 @@ information.gain(dataChanged, dataChanged$prediction)
 # 6      X2eme.voiture 0.088851625
 # 7         prediction 1.469479541
 # 8       categoryName 1.469479541
+#Les variables pertinentes sont peut-etre : nbEnfantsACharge (0.4) et situation familiale (0.3).
 
 weight = information.gain(prediction ~ ., dataChanged);weight
 # attributes  importance
