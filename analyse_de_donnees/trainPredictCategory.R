@@ -1,7 +1,5 @@
 library("rstudioapi")
 library("C50")
-library("tree")
-library("rpart")
 
 setwd(dirname(getActiveDocumentContext()$path))
 getwd()
@@ -25,7 +23,6 @@ table(categoryTrain$cluster)
 #Utilisation de C50
 #On explique cluster en fonction des variables explicatives (puissance, longueur, nbPlaces, nbPortes)
 model = C5.0(cluster~puissance+longueur+nbPlaces+nbPortes, categoryTrain)
-
 
 #Modeliser l'arbre
 plot(model, type="simple")
