@@ -34,6 +34,7 @@ CREATE INDEX if not exists cars_marque_nom_idx ON datawarehouse.cars (marque, no
 
 CREATE TABLE if not exists datawarehouse.registrations(
 	id              VARCHAR (50),
+	registrationid  VARCHAR (50),
 	occasion        BOOL,
 	prix           	float,
 	idCar			bigint,
@@ -41,6 +42,7 @@ CREATE TABLE if not exists datawarehouse.registrations(
 	CONSTRAINT registrations_cars_FK FOREIGN KEY (idCar) REFERENCES datawarehouse.cars(id)
 )  WITHOUT OIDS;
 
+CREATE INDEX if not exists registrations_registrationid_idx ON datawarehouse.registrations (registrationid);
 CREATE INDEX if not exists registrations_cars_idx ON datawarehouse.registrations (idCar);
 
 CREATE TABLE if not exists datawarehouse.catalogue(

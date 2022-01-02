@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class RegistrationEntity implements Serializable {
 
     private String id;
+    private String registrationid;
     private Boolean occasion;
     private double prix;
     private long idCar;
@@ -15,6 +16,14 @@ public class RegistrationEntity implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getRegistrationid() {
+        return registrationid;
+    }
+
+    public void setRegistrationid(String registrationid) {
+        this.registrationid = registrationid;
     }
 
     public Boolean getOccasion() {

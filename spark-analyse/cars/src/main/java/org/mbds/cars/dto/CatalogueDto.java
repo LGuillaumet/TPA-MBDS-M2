@@ -6,13 +6,14 @@ public class CatalogueDto  implements Serializable {
 
     private String marque;
     private String nom;
-    private long puissance;
+    private Long puissance;
     private String longueur;
-    private long nbplaces;
-    private long nbportes;
+    private Long nbplaces;
+    private Long nbportes;
     private Boolean occasion;
-    private double prix;
+    private Double prix;
     private String couleur;
+
 
     public String getMarque() {
         return marque;
@@ -30,11 +31,11 @@ public class CatalogueDto  implements Serializable {
         this.nom = nom;
     }
 
-    public long getPuissance() {
+    public Long getPuissance() {
         return puissance;
     }
 
-    public void setPuissance(long puissance) {
+    public void setPuissance(Long puissance) {
         this.puissance = puissance;
     }
 
@@ -46,19 +47,19 @@ public class CatalogueDto  implements Serializable {
         this.longueur = longueur;
     }
 
-    public long getNbplaces() {
+    public Long getNbplaces() {
         return nbplaces;
     }
 
-    public void setNbplaces(long nbplaces) {
+    public void setNbplaces(Long nbplaces) {
         this.nbplaces = nbplaces;
     }
 
-    public long getNbportes() {
+    public Long getNbportes() {
         return nbportes;
     }
 
-    public void setNbportes(long nbportes) {
+    public void setNbportes(Long nbportes) {
         this.nbportes = nbportes;
     }
 
@@ -70,11 +71,11 @@ public class CatalogueDto  implements Serializable {
         this.occasion = occasion;
     }
 
-    public double getPrix() {
+    public Double getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(Double prix) {
         this.prix = prix;
     }
 

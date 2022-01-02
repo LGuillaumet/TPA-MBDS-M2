@@ -63,7 +63,7 @@ namespace DataInjestion.Services.Kafka
 
             try
             {
-                var messages = datas.Select(data => new Message<string, string> { Key = string.Empty, Value = data });
+                var messages = datas.Select(data => new Message<string, string> { Key = string.Empty, Value = data }).ToList();
                 ProduceBatch(producer, UpsertWrapper.Configuration.Topic, messages, TimeSpan.FromSeconds(10));
             }
             catch (Exception e)
@@ -73,7 +73,7 @@ namespace DataInjestion.Services.Kafka
         }
 
         private void ProduceBatch<TKey, TVal>(IProducer<TKey, TVal> producer, string topic,
-            IEnumerable<Message<TKey, TVal>> messages, TimeSpan flushTimeout, CancellationTokenSource cts = null)
+            IList<Message<TKey, TVal>> messages, TimeSpan flushTimeout, CancellationTokenSource cts = null)
         {
             var stopWatch = new Stopwatch();
             var errorReports = new ConcurrentQueue<DeliveryReport<TKey, TVal>>();
@@ -92,11 +92,11 @@ namespace DataInjestion.Services.Kafka
             }
 
             stopWatch.Start();
-            foreach (var message in messages)
+            for(int i = 0; i < messages.Count; i++)
             {
                 try
                 {
-                    producer.Produce(topic, message, DeliveryHandler);
+                    producer.Produce(topic, messages[i], DeliveryHandler);
                     reportsExpected++;
                 }
                 catch (ProduceException<string, string> e)
@@ -105,12 +105,13 @@ namespace DataInjestion.Services.Kafka
                     {
                         producer.Flush(TimeSpan.FromMilliseconds(flushWaitMs));
                         Task.Delay(2000);
+                        i--;
                     }
                     else
                     {
                         throw e;
                     }
-                }   
+                }
             }
 
             var deadline = DateTime.UtcNow + flushTimeout;
