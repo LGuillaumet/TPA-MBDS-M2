@@ -14,7 +14,7 @@ export const FilterBrandBarChart = ({ brand }) => {
 		{
 			doors: [],
 			colors: [],
-			state: '',
+			occasion: '',
 			source: '',
 		});
 
@@ -64,13 +64,15 @@ export const FilterBrandBarChart = ({ brand }) => {
 						<ButtonGroup className="d-flex">
 							<Button
 								outline
-								onClick={function noRefCheck() { }}
+								active={params.occasion === false}
+								onClick={() => setParams((prev) => ({ ...prev, ['occasion']: false }))}
 							>
 								Neuve
 							</Button>
 							<Button
 								outline
-								onClick={function noRefCheck() { }}
+								active={params.occasion === true}
+								onClick={() => setParams((prev) => ({ ...prev, ['occasion']: true }))}
 							>
 								Occasion
 							</Button>
@@ -83,19 +85,22 @@ export const FilterBrandBarChart = ({ brand }) => {
 						<ButtonGroup className="d-flex">
 							<Button
 								outline
-								onClick={function noRefCheck() { }}
+								active={params.source === 'catalogue'}
+								onClick={() => setParams((prev) => ({ ...prev, ['source']: 'catalogue' }))}
 							>
 								Catalogue
 							</Button>
 							<Button
 								outline
-								onClick={function noRefCheck() { }}
+								active={params.source === 'registrations'}
+								onClick={() => setParams((prev) => ({ ...prev, ['source']: 'registrations' }))}
 							>
 								Immatriculations
 							</Button>
 							<Button
 								outline
-								onClick={function noRefCheck() { }}
+								active={params.source === ''}
+								onClick={() => setParams((prev) => ({ ...prev, ['source']: '' }))}
 							>
 								All
 							</Button>
@@ -110,7 +115,6 @@ export const FilterBrandBarChart = ({ brand }) => {
 						<Alert
 							className="p-1 m-0 mx-3 d-flex align-items-center justify-content-center"
 							color="primary"
-							fade
 						>
 							{dataFilter?.data.error}
 						</Alert>
