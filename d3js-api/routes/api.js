@@ -115,6 +115,9 @@ router.get('/lambda/:brand', async (req, res) =>{
     let haveSecondCar = 0;
     let nbHaveSecondCar = 0;
     
+    const ageMax = mergedClients.reduce((max, p) => p.age > max ? p.age : max, 0);
+    const tauxMax = mergedClients.reduce((max, p) => p.taux > max ? p.taux : max, 0);
+    const nbChildrenMax = mergedClients.reduce((max, p) => p.nbchildren > max ? p.nbchildren : max, 0);
 
     mergedClients.forEach((client) => {
         if (client.age) {
@@ -161,7 +164,10 @@ router.get('/lambda/:brand', async (req, res) =>{
         taux: taux / nbTaux,
         situation: situationSingle / nbSituation * 100 >= 50 ? 'Single' : 'Married',
         nbchildren: nbChildren / nbNbChildren,
-        havesecondcar: haveSecondCar / nbHaveSecondCar * 100 >= 50 ? true : false
+        havesecondcar: haveSecondCar / nbHaveSecondCar * 100 >= 50 ? true : false,
+        ageMax,
+        tauxMax,
+        nbChildrenMax,
     }
     
 
@@ -212,7 +218,10 @@ router.get('/model/lambda/:model', async (req, res) =>{
 
     let haveSecondCar = 0;
     let nbHaveSecondCar = 0;
-    
+
+    const ageMax = mergedClients.reduce((max, p) => p.age > max ? p.age : max, 0);
+    const tauxMax = mergedClients.reduce((max, p) => p.taux > max ? p.taux : max, 0);
+    const nbChildrenMax = mergedClients.reduce((max, p) => p.nbchildren > max ? p.nbchildren : max, 0);
 
     mergedClients.forEach((client) => {
         if (client.age) {
@@ -259,7 +268,10 @@ router.get('/model/lambda/:model', async (req, res) =>{
         taux: taux / nbTaux,
         situation: situationSingle / nbSituation * 100 >= 50 ? 'Single' : 'Married',
         nbchildren: nbChildren / nbNbChildren,
-        havesecondcar: haveSecondCar / nbHaveSecondCar * 100 >= 50 ? true : false
+        havesecondcar: haveSecondCar / nbHaveSecondCar * 100 >= 50 ? true : false,
+        ageMax,
+        tauxMax,
+        nbChildrenMax,
     }
     
 
