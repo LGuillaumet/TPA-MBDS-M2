@@ -20,6 +20,11 @@ router.get('/marques', async (req, res) =>{
     res.json({ marques });
 });
 
+router.get('/categories', async (req, res) =>{
+    const categories = await knex('datawarehouse.typecategories').distinct().pluck('name');
+    res.json({ categories });
+});
+
 router.get('/filter', async (req, res) => {
     const { couleurs, portes, occasion, source } = req.query;
     const ret = [];
