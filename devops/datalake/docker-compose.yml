@@ -133,22 +133,6 @@ services:
       - hive-metastore
       - hive-metastore-postgresql
 
-  presto:
-    image: ahanaio/prestodb-sandbox:latest
-    container_name: presto
-    ports:
-      - "8080:8080"
-      #- "8443:8443"
-    volumes:
-      - ./presto/master:/opt/presto-server/etc
-      - ./presto/hiveConfig:/hiveConfig
-    depends_on:
-      - mongodb
-      - cassandra
-      - namenode
-      - hive-metastore
-      - hive-metastore-postgresql
-
   postgres-data:
     image: postgres:latest
     container_name: postgres-data
@@ -166,6 +150,23 @@ services:
       - ./datas/postgre:/var/lib/postgresql/data
       # copy the sql script to create tables
       - ./postgre-data/sql/:/docker-entrypoint-initdb.d/
+
+  presto:
+    image: ahanaio/prestodb-sandbox:latest
+    container_name: presto
+    ports:
+      - "8080:8080"
+      #- "8443:8443"
+    volumes:
+      - ./presto/master:/opt/presto-server/etc
+      - ./presto/hiveConfig:/hiveConfig
+    depends_on:
+      - mongodb
+      - cassandra
+      - namenode
+      - hive-metastore
+      - hive-metastore-postgresql
+      - postgres-data
   
   spark:
     build: ../spark-cluster/spark

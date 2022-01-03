@@ -9,6 +9,7 @@ public class CarEntity implements Serializable {
 
     private long id;
     private String marque;
+    private String originalmarque;
     private String nom;
     private Integer puissance;
     private String longueur;
@@ -36,6 +37,14 @@ public class CarEntity implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getOriginalmarque() {
+        return originalmarque;
+    }
+
+    public void setOriginalmarque(String marque) {
+        this.originalmarque = marque;
     }
 
     public String getMarque() {

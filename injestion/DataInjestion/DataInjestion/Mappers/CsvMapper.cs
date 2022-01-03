@@ -17,6 +17,7 @@ namespace DataInjestion.Mappers
             config.Delimiter = configuration.FieldSeparator;
             config.Encoding = System.Text.Encoding.UTF8;
             config.QuoteAllFields = true;
+            config.IgnoreFieldValueMode = ChoIgnoreFieldValueMode.WhiteSpace;
 
              foreach (var schema in configuration.JsonSchemas)
              {

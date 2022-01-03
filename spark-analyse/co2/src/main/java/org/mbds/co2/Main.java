@@ -40,8 +40,8 @@ public class Main {
     private static String CO2Query = "select marquemodel, bonusmalus, rejection, energiecost" + " " +
             "from mongodb.datalake.carbon";
 
-    private static String CatalogAndImmatQuery = "select marque" + " " + "from hive.datalake.catalog" + " " +
-            "union distinct" + " " + "select marque" + " " + "from cassandra.datalake.immatriculation";
+    private static String CatalogAndImmatQuery = "select marque" + " " + "from hive.datalake.catalogue" + " " +
+            "union distinct" + " " + "select marque" + " " + "from cassandra.datalake.registration";
 
     private static final List<ColumnDefinition> csvColumns = new ArrayList(Arrays.asList(
             new ColumnDefinition("Marque / Modele", "marquemodel", StringType),

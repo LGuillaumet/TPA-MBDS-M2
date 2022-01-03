@@ -14,9 +14,21 @@ CREATE TABLE if not exists datawarehouse.clients(
 
 CREATE INDEX if not exists clients_registration_idx ON datawarehouse.clients (registrationid);
 
+CREATE TABLE if not exists datawarehouse.marketing(
+	id               text,
+	age              integer,
+	sexe             VARCHAR(1),
+	situation        VARCHAR(50),
+	nbchildren 		 integer,
+	taux             integer,
+	havesecondcar    BOOL,
+	CONSTRAINT marketing_PK PRIMARY KEY (id)
+) WITHOUT OIDS;
+
 CREATE TABLE if not exists datawarehouse.cars(
 	id              bigint,
 	marque          VARCHAR (50) NOT NULL,
+	originalmarque  VARCHAR (50),
 	nom           	VARCHAR (255) NOT NULL,
 	puissance       integer,
 	longueur 		VARCHAR (50),
@@ -64,12 +76,22 @@ CREATE TABLE if not exists datawarehouse.carbon(
 	CONSTRAINT carbon_PK PRIMARY KEY (marque)
 )  WITHOUT OIDS;
 
+CREATE TABLE if not exists datawarehouse.typecategories(
+	id       		integer,
+	name 			VARCHAR (50),
+	CONSTRAINT categories_PK PRIMARY KEY (id)
+);
+
 CREATE TABLE if not exists datawarehouse.carscategories(
 	puissance       integer,
 	longueur 		VARCHAR (50),
 	nbplaces        integer,
 	nbportes    	integer,
-	category		VARCHAR (50)
+	idCategorieType	integer,
+	CONSTRAINT carscategories_type_FK FOREIGN KEY (idCategorieType) REFERENCES datawarehouse.typecategories(id)
 );
 
 CREATE INDEX if not exists carscategories_cars_idx ON datawarehouse.carscategories (puissance, longueur, nbplaces, nbportes);
+
+
+

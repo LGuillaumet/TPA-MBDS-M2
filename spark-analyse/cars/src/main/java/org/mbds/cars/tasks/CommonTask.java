@@ -44,7 +44,17 @@ public class CommonTask {
     private static final String[][] collectionMarque = new String[][] {
             { "Hyundaè", "Hyundai" }
     };
+
     private static final Map<String, String> mapMarque = Stream.of(collectionMarque).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+
+    private static final String[][] collectionLongueur = new String[][] {
+            { "très longue", "VeryLong" },
+            { "longue", "Long" },
+            { "courte", "Short" },
+            { "moyenne", "Medium" }
+    };
+
+    private static final Map<String, String> mapLongueur = Stream.of(collectionLongueur).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
     public static void task(SparkSession spark, Dataset<RegistrationDto> datasetRegistration, Dataset<CatalogueDto> datasetCatalogue, String urlPostgre) throws AnalysisException {
 
@@ -77,9 +87,13 @@ public class CommonTask {
 
         rddCarEntity = rddCarEntity.map(entity -> {
             String base = entity.getMarque();
+            entity.setOriginalmarque(base);
             String marque = mapMarque.get(base);
             marque = (marque != null ? marque : base).toUpperCase();
             entity.setMarque(marque);
+            String baseL = mapLongueur.get(entity.getLongueur());
+            String longueur = baseL == null ? entity.getLongueur() :baseL;
+            entity.setLongueur(longueur);
             return entity;
         });
 
