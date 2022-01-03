@@ -167,5 +167,31 @@ router.get('/lambda/:brand', async (req, res) =>{
 
     res.json(ret);
 });
+
+router.get('/ratio/:brand', async (req, res) =>{
+    const { brand } = req.params;
+
+    const marques = await knex('datawarehouse.cars').distinct().pluck('marque');
+
+    if (!marques.includes(brand.toUpperCase())) {
+        return res.json({ error: 'Marque inconnue' });
+    }
+
+    const ret = {};
+    const catalogueCars = await knex('datawarehouse.catalogue').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.catalogue.idcar').where({ marque: brand.toUpperCase() });
+    const registrationsCars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar').where({ marque: brand.toUpperCase() });
+    const typeCategories = await knex('datawarehouse.typecategories');
+    const carscategories = await knex('datawarehouse.carscategories');
+    const cars = [...catalogueCars, ...registrationsCars];
+
+    carscategories.forEach((category) => {
+        const carsLongueur = cars.filter((car) => car.longueur === category.longueur).length / cars.length * 100;
+        const carType = typeCategories.find((type) => type.id === parseInt(category.category, 10));
+        ret[carType.name] = carsLongueur;
+    });
+    
+
+    res.json(ret);
+});
  
 module.exports = router;
