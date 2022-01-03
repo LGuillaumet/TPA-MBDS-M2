@@ -25,6 +25,22 @@ router.get('/categories', async (req, res) =>{
     res.json({ categories });
 });
 
+router.get('/listall', async (req, res) =>{
+    const carbon = await knex('datawarehouse.carbon');
+    const registrationsCars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar');
+    const ret = [];
+
+    carbon.forEach((carCarbon) => {
+        ret.push({
+            nomMarque: carCarbon.marque,
+            pollution: carCarbon.rejet,
+            proportion: registrationsCars.filter((car) => car.marque === carCarbon.marque).length / registrationsCars.length * 100,
+        });
+    });
+
+    res.json(ret);
+});
+
 router.get('/filter', async (req, res) => {
     const { couleurs, portes, occasion, source } = req.query;
     const ret = [];
