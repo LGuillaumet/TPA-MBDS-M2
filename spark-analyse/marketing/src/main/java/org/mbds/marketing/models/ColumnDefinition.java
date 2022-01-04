@@ -1,4 +1,4 @@
-package org.mbds.clients.models;
+package org.mbds.marketing.models;
 
 import org.apache.spark.sql.types.DataType;
 

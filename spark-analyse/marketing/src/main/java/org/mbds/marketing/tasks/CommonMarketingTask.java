@@ -1,12 +1,12 @@
-package org.mbds.clients.tasks;
+package org.mbds.marketing.tasks;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.MarketingDto;
-import org.mbds.clients.entities.MarketingEntity;
+import org.mbds.marketing.dto.MarketingDto;
+import org.mbds.marketing.entities.MarketingEntity;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +49,7 @@ public class CommonMarketingTask {
         result.write()
                 .mode(SaveMode.Overwrite)
                 .option("truncate", true)
+                .option("cascadeTruncate", true)
                 .format("jdbc")
                 .option("url", urlPostgre)
                 .option("dbtable", "datawarehouse.marketing")

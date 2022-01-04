@@ -1,4 +1,4 @@
-package org.mbds.clients.dto;
+package org.mbds.marketing.dto;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package org.mbds.clients.entities;
+package org.mbds.marketing.entities;
 
 import java.io.Serializable;
 

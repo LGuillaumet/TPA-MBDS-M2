@@ -1,4 +1,4 @@
-package org.mbds.clients.interfaces;
+package org.mbds.marketing.interfaces;
 
 import org.apache.spark.sql.SparkSession;
 

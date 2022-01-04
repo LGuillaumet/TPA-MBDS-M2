@@ -3,7 +3,6 @@ package org.mbds.clients;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.*;
 import org.mbds.clients.interfaces.IClientsSparkAction;
-import org.mbds.clients.interfaces.IMarketingSparkAction;
 import org.mbds.clients.tasks.*;
 
 import java.util.*;
@@ -11,15 +10,11 @@ import java.util.*;
 public class Main {
 
     private static final Map<String, IClientsSparkAction> mapActionClient = new HashMap<>();
-    private static final Map<String, IMarketingSparkAction> mapActionMarketing = new HashMap<>();
 
     public static void main(String[] args) {
 
         mapActionClient.put("datalake", DatalakeClientsTask::task);
         mapActionClient.put("dba", DbaClientsTask::task);
-
-        mapActionMarketing.put("datalake", DatalakeMarketingTask::task);
-        mapActionMarketing.put("dba", DatalakeMarketingTask::task);
 
         SparkSession spark = getSession();
 
@@ -27,10 +22,6 @@ public class Main {
             IClientsSparkAction sparkactionclient = mapActionClient.get(args[0]);
             if(sparkactionclient != null){
                 sparkactionclient.handle(spark, CommonClientsTask::task);
-            }
-            IMarketingSparkAction sparkactionmarketing = mapActionMarketing.get(args[0]);
-            if(sparkactionmarketing != null){
-                sparkactionmarketing.handle(spark, CommonMarketingTask::task);
             }
         }
 

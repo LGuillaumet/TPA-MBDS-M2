@@ -1,13 +1,14 @@
-package org.mbds.clients.tasks;
+package org.mbds.marketing.tasks;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.MarketingDto;
-import org.mbds.clients.interfaces.IMarketingSparkTask;
-import org.mbds.clients.models.ColumnDefinition;
+import org.mbds.marketing.config.JobConfiguration;
+import org.mbds.marketing.dto.MarketingDto;
+import org.mbds.marketing.interfaces.IMarketingSparkTask;
+import org.mbds.marketing.models.ColumnDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +17,7 @@ import java.util.List;
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
 import static org.apache.spark.sql.types.DataTypes.*;
 import static org.apache.spark.sql.types.DataTypes.StringType;
-import static org.mbds.clients.config.JobConfiguration.*;
+
 
 public class DbaMarketingTask {
 
@@ -37,7 +38,7 @@ public class DbaMarketingTask {
                 .format("csv")
                 .option("header", "true")
                 .option("delimiter", ",")
-                .load(URL_HDFS_MARKETING);
+                .load(JobConfiguration.URL_HDFS_MARKETING);
 
         for(ColumnDefinition definition : csvColumns)  {
             dataset = dataset.withColumnRenamed(definition.sourceName,definition.finalName);
@@ -52,7 +53,7 @@ public class DbaMarketingTask {
                 .as(Encoders.bean(MarketingDto.class))
                 .javaRDD();
 
-        sparkTask.handleTask(spark, rdd, URL_HDFS_SAVE_POSTGRES);
+        sparkTask.handleTask(spark, rdd, JobConfiguration.URL_HDFS_SAVE_POSTGRES);
     }
 
 }

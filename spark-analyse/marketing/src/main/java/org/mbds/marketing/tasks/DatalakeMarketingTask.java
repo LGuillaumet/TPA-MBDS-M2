@@ -1,13 +1,12 @@
-package org.mbds.clients.tasks;
+package org.mbds.marketing.tasks;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.MarketingDto;
-import org.mbds.clients.interfaces.IMarketingSparkTask;
+import org.mbds.marketing.config.JobConfiguration;
+import org.mbds.marketing.dto.MarketingDto;
+import org.mbds.marketing.interfaces.IMarketingSparkTask;
 
-import static org.mbds.clients.config.JobConfiguration.URL_DATALAKE_SAVE_POSTGRES;
-import static org.mbds.clients.config.JobConfiguration.URL_PRESTO;
 
 public class DatalakeMarketingTask {
 
@@ -18,7 +17,7 @@ public class DatalakeMarketingTask {
     public static void task(SparkSession spark, IMarketingSparkTask sparkTask){
         Dataset<MarketingDto> dataset = spark.read()
                 .format("jdbc")
-                .option("url", URL_PRESTO)
+                .option("url", JobConfiguration.URL_PRESTO)
                 .option("query", clientQuery)
                 .option("user", "user")
                 .option("driver", "com.facebook.presto.jdbc.PrestoDriver")
@@ -28,6 +27,6 @@ public class DatalakeMarketingTask {
         dataset.printSchema();
         dataset.show(false);
 
-        sparkTask.handleTask(spark, dataset.javaRDD(), URL_DATALAKE_SAVE_POSTGRES);
+        sparkTask.handleTask(spark, dataset.javaRDD(), JobConfiguration.URL_DATALAKE_SAVE_POSTGRES);
     }
 }

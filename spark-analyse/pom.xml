@@ -13,6 +13,7 @@
         <module>clients</module>
         <module>cars</module>
         <module>co2</module>
+        <module>marketing</module>
     </modules>
 
     <properties>
