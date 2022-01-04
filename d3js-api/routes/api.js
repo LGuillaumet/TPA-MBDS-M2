@@ -4,28 +4,28 @@ const { knex } = require('../lib/knex/init');
 
 let source = "public";
 
-if (process.env.NODE_ENV !== 'production') {}
-router.get('/colors', async (req, res) =>{
+if (process.env.NODE_ENV !== 'production') { }
+router.get('/colors', async (req, res) => {
     const ret = await knex('datawarehouse.cars').distinct().pluck('couleur');
     res.json({ couleurs: ret });
 });
 
-router.get('/doors', async (req, res) =>{
+router.get('/doors', async (req, res) => {
     const ret = await knex('datawarehouse.cars').distinct().pluck('nbportes');
     res.json({ portes: ret });
 });
 
-router.get('/marques', async (req, res) =>{
+router.get('/marques', async (req, res) => {
     const marques = await knex('datawarehouse.cars').distinct().pluck('marque');
     res.json({ marques });
 });
 
-router.get('/categories', async (req, res) =>{
+router.get('/categories', async (req, res) => {
     const categories = await knex('datawarehouse.typecategories').distinct().pluck('name');
     res.json({ categories });
 });
 
-router.get('/listall', async (req, res) =>{
+router.get('/listall', async (req, res) => {
     const carbon = await knex('datawarehouse.carbon');
     const registrationsCars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar');
     const ret = [];
@@ -86,8 +86,8 @@ router.get('/filter', async (req, res) => {
 
     res.json(ret);
 });
- 
-router.get('/lambda/:brand', async (req, res) =>{
+
+router.get('/lambda/:brand', async (req, res) => {
     const { brand } = req.params;
 
     const cars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar').where({ marque: brand.toUpperCase() });
@@ -98,7 +98,7 @@ router.get('/lambda/:brand', async (req, res) =>{
         return;
     }
 
-    const splitArrayIntoChunksOfLen = (arr, len) =>{
+    const splitArrayIntoChunksOfLen = (arr, len) => {
         var chunks = [], i = 0, n = arr.length;
         while (i < n) {
             chunks.push(arr.slice(i, i += len));
@@ -130,7 +130,7 @@ router.get('/lambda/:brand', async (req, res) =>{
 
     let haveSecondCar = 0;
     let nbHaveSecondCar = 0;
-    
+
     const ageMax = mergedClients.reduce((max, p) => p.age > max ? p.age : max, 0);
     const tauxMax = mergedClients.reduce((max, p) => p.taux > max ? p.taux : max, 0);
     const nbChildrenMax = mergedClients.reduce((max, p) => p.nbchildren > max ? p.nbchildren : max, 0);
@@ -141,7 +141,7 @@ router.get('/lambda/:brand', async (req, res) =>{
             nbAge++;
         }
 
-        if(client.sexe) {
+        if (client.sexe) {
             if (client.sexe === 'M') {
                 sexeH++;
             }
@@ -153,7 +153,7 @@ router.get('/lambda/:brand', async (req, res) =>{
             nbTaux++;
         }
 
-        if(client.situation) {
+        if (client.situation) {
             nbSituation++;
             if (client.situation === 'Single') {
                 situationSingle++;
@@ -185,14 +185,14 @@ router.get('/lambda/:brand', async (req, res) =>{
         tauxMax,
         nbChildrenMax,
     }
-    
+
 
     res.json(ret);
 });
 
-router.get('/model/lambda/:model', async (req, res) =>{
+router.get('/model/lambda/:model', async (req, res) => {
     const { model } = req.params;
-    
+
     console.log("model", model);
     const cars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar').where({ nom: model });
     const ids = cars.map((c) => c.registrationid);
@@ -202,7 +202,7 @@ router.get('/model/lambda/:model', async (req, res) =>{
         return;
     }
 
-    const splitArrayIntoChunksOfLen = (arr, len) =>{
+    const splitArrayIntoChunksOfLen = (arr, len) => {
         var chunks = [], i = 0, n = arr.length;
         while (i < n) {
             chunks.push(arr.slice(i, i += len));
@@ -245,7 +245,7 @@ router.get('/model/lambda/:model', async (req, res) =>{
             nbAge++;
         }
 
-        if(client.sexe) {
+        if (client.sexe) {
             if (client.sexe === 'M') {
                 sexeH++;
             }
@@ -257,7 +257,7 @@ router.get('/model/lambda/:model', async (req, res) =>{
             nbTaux++;
         }
 
-        if(client.situation) {
+        if (client.situation) {
             nbSituation++;
             if (client.situation === 'Single') {
                 situationSingle++;
@@ -289,12 +289,12 @@ router.get('/model/lambda/:model', async (req, res) =>{
         tauxMax,
         nbChildrenMax,
     }
-    
+
 
     res.json(ret);
 });
 
-router.get('/ratio/:brand', async (req, res) =>{
+router.get('/ratio/:brand', async (req, res) => {
     const { brand } = req.params;
 
     const marques = await knex('datawarehouse.cars').distinct().pluck('marque');
@@ -315,9 +315,44 @@ router.get('/ratio/:brand', async (req, res) =>{
         const carType = typeCategories.find((type) => type.id === parseInt(category.category, 10));
         ret[carType.name] = carsLongueur;
     });
-    
+
 
     res.json(ret);
 });
- 
+
+router.get('/numberModeles/:brand', async (req, res) => {
+    const { brand } = req.params;
+
+    const marques = await knex('datawarehouse.cars').distinct().pluck('marque');
+
+    if (!marques.includes(brand.toUpperCase())) {
+        return res.json({ error: 'Marque inconnue' });
+    }
+
+    const ret = {};
+    const catalogueCars = await knex('datawarehouse.catalogue').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.catalogue.idcar').where({ marque: brand.toUpperCase() });
+    const registrationsCars = await knex('datawarehouse.registrations').join('datawarehouse.cars', 'datawarehouse.cars.id', 'datawarehouse.registrations.idcar').where({ marque: brand.toUpperCase() });
+    const listModeleBrand = await knex('datawarehouse.cars').where({ marque: brand.toUpperCase() });
+
+
+    const cars = [...catalogueCars, ...registrationsCars];
+
+    listModeleBrand.forEach((carModele, index) => {
+        const carsNumber = cars.filter((car) => car.idcar === carModele.id).length
+        if (ret[carModele.nom]) {
+            ret[carModele.nom] =
+                [
+                    ...ret[carModele.nom],
+                    { name: `${carModele.puissance}CH-${carModele.couleur}`, value: carsNumber }
+                ];
+        }
+        else {
+            ret[carModele.nom] = [{ name: `${carModele.puissance}CH-${carModele.couleur}`, value: carsNumber }];
+        }
+    });
+
+
+    res.json(ret);
+});
+
 module.exports = router;

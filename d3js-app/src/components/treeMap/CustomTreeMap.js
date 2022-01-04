@@ -75,7 +75,6 @@ export const TreeMap = () => {
 				height={200}
 				data={data}
 				dataKey="size"
-				ratio={4 / 3}
 				stroke="#fff"
 				fill="#8884d8"
 				content={<CustomizedContent colors={COLORS} />}

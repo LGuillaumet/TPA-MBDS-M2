@@ -8,6 +8,8 @@ import { PieChartDataBrand } from '../components/pieChart/PieChartDataBrand';
 import { SimpleRadialBand } from '../components/radialBarChart/SimpleRadialBarChart';
 import { FilterBrandBarChart } from '../components/barChart/FilterBrandBarChart';
 import { TreeMap } from '../components/treeMap/CustomTreeMap';
+import { TreeMapModelesBrand } from '../components/treeMap/TreeMapModelesBrand';
+
 import { SimpleRadarChart } from '../components/radarChart/SimpleRadarChart';
 
 import { fetchAllBrands } from '../api/requests/brand';
@@ -54,16 +56,16 @@ export const DataViz = () => {
 								}))}
 							/>
 							<Row xs="2">
-								<Col className="border">
-									<PieChartDataBrand brand={brand} />
+								<Col className="border p-0">
+									<PieChartDataBrand />
 								</Col>
-								<Col className="border h-50">
-									<TreeMap />
+								<Col className="border p-0">
+									<TreeMapModelesBrand brand={brand} />
 								</Col>
-								<Col className="border">
+								<Col className="border p-0">
 									<SimpleRadialBand brand={brand} />
 								</Col>
-								<Col className="border">
+								<Col className="border p-0">
 									<SimpleRadarChart />
 								</Col>
 							</Row>
@@ -77,16 +79,16 @@ export const DataViz = () => {
 										options={optionsBrands}
 									/>
 									<Row xs="2">
-										<Col className="border">
+										<Col className="border p-0">
 											<PieChartDataBrand />
 										</Col>
-										<Col className="border h-50">
-											<TreeMap />
+										<Col className="border p-0">
+											<TreeMapModelesBrand brand={brand} />
 										</Col>
-										<Col className="border">
+										<Col className="border p-0">
 											<SimpleRadialBand />
 										</Col>
-										<Col className="border">
+										<Col className="border p-0">
 											<SimpleRadarChart />
 										</Col>
 									</Row>
@@ -98,6 +100,8 @@ export const DataViz = () => {
 							Bar Chart
 						</h6>
 						<FilterBrandBarChart />
+						<TreeMap />
+
 					</Row>
 				</Col>
 			</Row>
