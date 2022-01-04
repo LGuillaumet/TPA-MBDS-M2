@@ -4,6 +4,15 @@ const { knex } = require('../lib/knex/init');
 
 let source = "public";
 
+const labelType = {
+    Short_nbpo_3_nbpl_5: 'Sous-compactes',
+    Medium_nbpo_5_nbpl_5: 'Compactes',
+    Long_nbpo_5_nbpl_5:  'Berlines',
+    Short_nbpo_5_nbpl_5: 'Citadines',
+    VeryLong_nbpo_5_nbpl_5: 'Grandes Berlines',
+    Long_nbpo_5_nbpl_7: 'Monospaces'
+}
+
 if (process.env.NODE_ENV !== 'production') { }
 router.get('/colors', async (req, res) => {
     const ret = await knex('datawarehouse.cars').distinct().pluck('couleur');
@@ -312,8 +321,10 @@ router.get('/ratio/:brand', async (req, res) => {
 
     carscategories.forEach((category) => {
         const carsLongueur = cars.filter((car) => car.longueur === category.longueur).length / cars.length * 100;
-        const carType = typeCategories.find((type) => type.id === parseInt(category.category, 10));
-        ret[carType.name] = carsLongueur;
+        const carType = typeCategories.find((type) => type.id === category.idcategorietype);
+        if(carsLongueur > 0) {
+        ret[labelType[carType.name]] = carsLongueur;
+        }
     });
 
 
