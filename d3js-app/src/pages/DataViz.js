@@ -57,7 +57,7 @@ export const DataViz = () => {
 							/>
 							<Row xs="2">
 								<Col className="border p-0">
-									<PieChartDataBrand />
+									<PieChartDataBrand brand={brand} />
 								</Col>
 								<Col className="border p-0">
 									<TreeMapModelesBrand brand={brand} />
