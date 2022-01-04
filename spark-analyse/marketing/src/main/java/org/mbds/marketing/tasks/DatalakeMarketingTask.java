@@ -6,7 +6,6 @@ import org.apache.spark.sql.SparkSession;
 import org.mbds.clients.dto.MarketingDto;
 import org.mbds.clients.interfaces.IMarketingSparkTask;
 
-import static org.apache.spark.sql.functions.monotonically_increasing_id;
 import static org.mbds.clients.config.JobConfiguration.URL_DATALAKE_SAVE_POSTGRES;
 import static org.mbds.clients.config.JobConfiguration.URL_PRESTO;
 
@@ -24,7 +23,6 @@ public class DatalakeMarketingTask {
                 .option("user", "user")
                 .option("driver", "com.facebook.presto.jdbc.PrestoDriver")
                 .load()
-                .withColumn("id", monotonically_increasing_id())
                 .as(Encoders.bean(MarketingDto.class));
 
         dataset.printSchema();
@@ -32,5 +30,4 @@ public class DatalakeMarketingTask {
 
         sparkTask.handleTask(spark, dataset.javaRDD(), URL_DATALAKE_SAVE_POSTGRES);
     }
-
 }
