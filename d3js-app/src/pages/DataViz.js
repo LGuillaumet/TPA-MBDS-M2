@@ -55,13 +55,13 @@ export const DataViz = () => {
 							/>
 							<Row xs="2">
 								<Col className="border">
-									<PieChartDataBrand />
+									<PieChartDataBrand brand={brand} />
 								</Col>
 								<Col className="border h-50">
 									<TreeMap />
 								</Col>
 								<Col className="border">
-									<SimpleRadialBand />
+									<SimpleRadialBand brand={brand} />
 								</Col>
 								<Col className="border">
 									<SimpleRadarChart />
