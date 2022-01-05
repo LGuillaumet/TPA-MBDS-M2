@@ -5,9 +5,9 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.ClientDto;
-import org.mbds.clients.interfaces.IClientsSparkTask;
-import org.mbds.clients.models.ColumnDefinition;
+import org.mbds.share.dto.ClientDto;
+import org.mbds.share.interfaces.IClientsSparkTask;
+import org.mbds.share.models.ColumnDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;

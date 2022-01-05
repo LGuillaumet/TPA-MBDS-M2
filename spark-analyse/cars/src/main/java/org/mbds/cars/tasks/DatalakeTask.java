@@ -1,9 +1,9 @@
 package org.mbds.cars.tasks;
 
 import org.apache.spark.sql.*;
-import org.mbds.cars.dto.CatalogueDto;
-import org.mbds.cars.dto.RegistrationDto;
-import org.mbds.cars.interfaces.ISparkTask;
+import org.mbds.share.dto.CatalogueDto;
+import org.mbds.share.dto.RegistrationDto;
+import org.mbds.share.interfaces.ISparkTask;
 
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
 import static org.mbds.cars.config.JobConfiguration.URL_DATALAKE_SAVE_POSTGRES;

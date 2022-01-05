@@ -2,12 +2,12 @@ package org.mbds.cars.tasks;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.*;
-import org.mbds.cars.dto.CarDto;
-import org.mbds.cars.dto.CatalogueDto;
-import org.mbds.cars.dto.RegistrationDto;
-import org.mbds.cars.entities.CarEntity;
-import org.mbds.cars.entities.CatalogueEntity;
-import org.mbds.cars.entities.RegistrationEntity;
+import org.mbds.share.dto.CarDto;
+import org.mbds.share.dto.CatalogueDto;
+import org.mbds.share.dto.RegistrationDto;
+import org.mbds.share.entities.CarEntity;
+import org.mbds.share.entities.CatalogueEntity;
+import org.mbds.share.entities.RegistrationEntity;
 
 import java.util.Map;
 import java.util.stream.Collectors;

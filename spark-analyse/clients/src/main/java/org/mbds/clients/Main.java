@@ -2,8 +2,8 @@ package org.mbds.clients;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.*;
-import org.mbds.clients.interfaces.IClientsSparkAction;
 import org.mbds.clients.tasks.*;
+import org.mbds.share.interfaces.IClientsSparkAction;
 
 import java.util.*;
 

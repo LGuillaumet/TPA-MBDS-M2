@@ -6,9 +6,9 @@ import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.mbds.marketing.config.JobConfiguration;
-import org.mbds.marketing.dto.MarketingDto;
-import org.mbds.marketing.interfaces.IMarketingSparkTask;
-import org.mbds.marketing.models.ColumnDefinition;
+import org.mbds.share.dto.MarketingDto;
+import org.mbds.share.interfaces.IMarketingSparkTask;
+import org.mbds.share.models.ColumnDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;

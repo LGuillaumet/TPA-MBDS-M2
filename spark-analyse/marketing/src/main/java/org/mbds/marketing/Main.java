@@ -2,7 +2,7 @@ package org.mbds.marketing;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.marketing.interfaces.IMarketingSparkAction;
+import org.mbds.share.interfaces.IMarketingSparkAction;
 import org.mbds.marketing.tasks.CommonMarketingTask;
 import org.mbds.marketing.tasks.DatalakeMarketingTask;
 

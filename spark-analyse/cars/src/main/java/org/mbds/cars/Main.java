@@ -2,7 +2,7 @@ package org.mbds.cars;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.*;
-import org.mbds.cars.interfaces.ISparkAction;
+import org.mbds.share.interfaces.ISparkAction;
 import org.mbds.cars.tasks.CommonTask;
 import org.mbds.cars.tasks.DatalakeTask;
 import org.mbds.cars.tasks.DbaTask;

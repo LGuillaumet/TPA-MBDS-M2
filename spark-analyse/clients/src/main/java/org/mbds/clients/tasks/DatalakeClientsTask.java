@@ -3,8 +3,8 @@ package org.mbds.clients.tasks;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.SparkSession;
-import org.mbds.clients.dto.ClientDto;
-import org.mbds.clients.interfaces.IClientsSparkTask;
+import org.mbds.share.dto.ClientDto;
+import org.mbds.share.interfaces.IClientsSparkTask;
 
 import static org.apache.spark.sql.functions.monotonically_increasing_id;
 import static org.mbds.clients.config.JobConfiguration.URL_DATALAKE_SAVE_POSTGRES;
