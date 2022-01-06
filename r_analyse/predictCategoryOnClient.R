@@ -4,13 +4,14 @@ library(dplyr)
 library("C50")
 library("tidyr")
 
-setwd(dirname(getActiveDocumentContext()$path))
-getwd()
+# setwd(dirname(getActiveDocumentContext()$path))
+# getwd()
 
 ##Nettoyage des fichiers de donnees
 #Chargement des donnees
-client1 = read.csv("Clients_1.csv", header=T, sep=",", dec='.')
-client9 = read.csv("Clients_9.csv", header=T, sep=",", dec='.')
+#Utiliser les fichiers clients1.csv et clients9.csv
+client1 = read.csv(file.choose(), header=T, sep=",", dec='.')
+client9 = read.csv(file.choose(), header=T, sep=",", dec='.')
 
 #Merge les 2 fichiers
 clients = rbind(client1, client9)
@@ -123,14 +124,14 @@ successClientPrediction = nrow(dataVal[dataVal$prediction == dataVal$predictCate
 #Le taux de succes est a 72.5%.
 
 #Donner un nom aux nouvelles predictions 
-dataVal$categoryNamePredict <- ifelse(dataVal$predictCategoryClient == 1, 'longue5po5pl',
-                                  ifelse(dataVal$predictCategoryClient == 2, 'tresLongue5pl5po',
-                                    ifelse(dataVal$predictCategoryClient == 3, 'moyenne5pl5po',
-                                           ifelse(dataVal$predictCategoryClient == 4, 'courte5pl5po',
-                                                  ifelse(dataVal$predictCategoryClient== 5,'courte5pl3po','longue7pl5po')))))
-View(dataVal)
+# dataVal$categoryNamePredict <- ifelse(dataVal$predictCategoryClient == 1, 'longue5po5pl',
+#                                   ifelse(dataVal$predictCategoryClient == 2, 'tresLongue5pl5po',
+#                                     ifelse(dataVal$predictCategoryClient == 3, 'moyenne5pl5po',
+#                                            ifelse(dataVal$predictCategoryClient == 4, 'courte5pl5po',
+#                                                   ifelse(dataVal$predictCategoryClient== 5,'courte5pl3po','longue7pl5po')))))
+# View(dataVal)
 
 
 #Grouper les categories afin de mieux comparer la prediction
-dataGrouped = dataVal %>% group_by(prediction) %>% summarise(age = age, sexe=sexe, taux=taux, situationFamiliale = situationFamiliale, nbEnfantsAcharge=nbEnfantsAcharge, X2eme.voiture=X2eme.voiture, categoryName=categoryName, predictCategoryClient=predictCategoryClient, categoryNamePredict=categoryNamePredict);dataGrouped
+dataGrouped = dataVal %>% group_by(prediction) %>% summarise(age = age, sexe=sexe, taux=taux, situationFamiliale = situationFamiliale, nbEnfantsAcharge=nbEnfantsAcharge, X2eme.voiture=X2eme.voiture, predictCategoryClient=predictCategoryClient);dataGrouped
 View(dataGrouped)

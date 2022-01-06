@@ -3,6 +3,7 @@ library("FSelector")
 
 ##Analyser les bonnes variables predictives
 #Transformation des variables en vartiables numeriques
+#La variable data est celle creee dans le fichier predictCategoryOnClient.
 dataChanged = data
 str(dataChanged)
 
@@ -12,7 +13,7 @@ dataChanged$taux = as.numeric(dataChanged$taux)
 dataChanged = subset(dataChanged, select = c(-immatriculation, -marque, -nom, -categoryName))
 
 #Choix des variables predictives
-information.gain(dataChanged, dataChanged$prediction)
+information_gain(dataChanged, dataChanged$prediction)
 # attributes  importance
 # 1                age 0.001611973
 # 2               sexe 0.000323427
