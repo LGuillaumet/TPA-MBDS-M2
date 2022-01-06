@@ -70,12 +70,11 @@ export const DataViz = () => {
 								<Col className="border p-0">
 									<TreeMapModelesBrand brand={brand} />
 								</Col>
+							</Row>
+							<Row>
 								<Col className="border p-0">
 									<ListBoxPlot brand={brand} />
 
-								</Col>
-								<Col className="border p-0">
-									<SimpleRadarChart />
 								</Col>
 							</Row>
 						</Col>
@@ -98,14 +97,14 @@ export const DataViz = () => {
 										<Col className="border p-0">
 											<TreeMapModelesBrand brand={brandCompare} />
 										</Col>
+									</Row>
+
+									<Row>
 										<Col className="border p-0">
 											<ListBoxPlot brand={brandCompare} />
-
-										</Col>
-										<Col className="border p-0">
-											<SimpleRadarChart />
 										</Col>
 									</Row>
+
 								</Fade>
 
 							</Col>

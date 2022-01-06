@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table } from 'reactstrap';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Select from "react-select";
 import { useQuery } from 'react-query';
 
 import { NavBar } from '../components/NavBar';
 
-import { fetchPredictionTypeCar, fetchPredictionCar } from '../api/requests/predictions';
+import { fetchPredictionTypeCar, fetchPredictionCar, fetchPredictionByIdMarketing } from '../api/requests/predictions';
 
 
 export const Prediction = () => {
 	const [customers, setPredictCustomer] = useState([]);
 	const [cars, setPredictCars] = useState([]);
+
+
+	const [idmarketing, setIdmarketing] = useState(null);
+
 
 
 	const { data: dataPrediction, isFetching: isLoading, isSuccess } =
@@ -22,8 +27,19 @@ export const Prediction = () => {
 		useQuery('predictionCar', () => fetchPredictionCar(), {
 		});
 
+	const { data: dataPredictionTypeByMarketingId, refetch } =
+		useQuery('predictionTypeByMarketingId', () => fetchPredictionByIdMarketing(idmarketing), {
+			enabled: idmarketing !== null,
+		});
+
+	useEffect(() => {
+		console.log(idmarketing);
+		refetch();
+	}, [idmarketing])
+
 	const [dataPlot, setDataPlot] = useState([]);
 	const [dataPlotCars, setDataPlotCars] = useState([]);
+	const [dataPlotPrediction, setDataPlotPrediction] = useState([]);
 
 
 	useEffect(() => {
@@ -44,6 +60,17 @@ export const Prediction = () => {
 		}
 	}, [dataPredictionCarByTypeCategory]);
 
+	useEffect(() => {
+		if (isSuccess && !dataPredictionTypeByMarketingId.data.error) {
+			setDataPlotPrediction(Object.entries(dataPredictionTypeByMarketingId.data).map((e) => ({ name: e[0], value: e[1][0].prediction })));
+		}
+		else {
+			setDataPlotPrediction([]);
+		}
+	}, [dataPredictionTypeByMarketingId]);
+
+	console.log(dataPlotPrediction)
+
 	return (
 		<>
 			<NavBar />
@@ -60,7 +87,7 @@ export const Prediction = () => {
 											value: v.value
 										}))}
 									/>
-									<Table bordered className="m-0">
+									<Table hover bordered className="m-0">
 										<thead>
 											<tr>
 												<th>#</th>
@@ -74,13 +101,13 @@ export const Prediction = () => {
 										<tbody>
 											{customers.map((customer, index) => {
 												return (
-													<tr key={index}>
-														<th scope="row">{index}</th>
-														<td>{customer.age}</td>
-														<td>{customer.situation}</td>
-														<td>{customer.nbchildren}</td>
-														<td>{customer.taux}</td>
-														<td>{customer.havesecondcar ? 'oui' : 'non'}</td>
+													<tr key={index} onClick={() => setIdmarketing(customer.idmarketing)} style={{cursor: 'pointer'}}>
+														<th onClick={() => setIdmarketing(customer.idmarketing)} scope="row">{index}</th>
+														<td onClick={() => setIdmarketing(customer.idmarketing)}>{customer.age}</td>
+														<td onClick={() => setIdmarketing(customer.idmarketing)}>{customer.situation}</td>
+														<td onClick={() => setIdmarketing(customer.idmarketing)}>{customer.nbchildren}</td>
+														<td onClick={() => setIdmarketing(customer.idmarketing)}>{customer.taux}</td>
+														<td onClick={() => setIdmarketing(customer.idmarketing)}>{customer.havesecondcar ? 'oui' : 'non'}</td>
 													</tr>
 												);
 											})}
@@ -88,6 +115,30 @@ export const Prediction = () => {
 									</Table>
 
 								</Card>
+							</Col>
+							<Col>
+								{idmarketing && (
+									<ResponsiveContainer width={"100%"} height={400}>
+										<BarChart
+											width={500}
+											height={300}
+											data={dataPlotPrediction}
+											margin={{
+												top: 5,
+												right: 30,
+												left: 20,
+												bottom: 5,
+											}}
+											barSize={20}
+										>
+											<XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} />
+											<YAxis />
+											<Tooltip />
+											<CartesianGrid strokeDasharray="3 3" />
+											<Bar dataKey="value" fill="#8884d8" background={{ fill: '#eee' }} />
+										</BarChart>
+									</ResponsiveContainer>
+								)}
 							</Col>
 						</Row>
 						<Row xs="12" className="justify-content-center mx-5 mt-5">
