@@ -74,6 +74,36 @@ router.get('/listPredictionTypeCar', async (req, res) => {
 
 });
 
+router.get('/listPredictionCar', async (req, res) => {
+    const predictionTypeCar = await
+        knex.select('cars.*', ' c.prix', 'c.occasion', 't.id AS idtype', 't.name').from('datawarehouse.catalogue AS c ').join(
+            'datawarehouse.cars AS cars', 'cars.id', 'c.idcar').join(
+                'datawarehouse.carscategories AS cat', function () {
+                    this
+                        .on('cars.puissance', '=', 'cat.puissance')
+                        .on('cars.longueur', '=', 'cat.longueur')
+                        .on('cars.nbplaces', '=', 'cat.nbplaces')
+                        .on('cars.nbportes', '=', 'cat.nbportes')
+
+                }).join('datawarehouse.typecategories AS t', 't.id', 'cat.idcategorietype');
+
+    const ret = {};
+
+    predictionTypeCar.forEach((prediction) => {
+        const name = [labelType[prediction.name]]
+        if (ret[name]) {
+            ret[name] =
+                [...ret[name], prediction];
+        }
+        else {
+            ret[name] = [prediction];
+
+        }
+    });
+    res.json(ret);
+
+});
+
 router.get('/userQBrand/:brand', async (req, res) => {
     const { brand } = req.params;
 
