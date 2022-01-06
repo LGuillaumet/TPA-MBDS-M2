@@ -7,6 +7,8 @@ library("tidyr")
 setwd(dirname(getActiveDocumentContext()$path))
 getwd()
 
+#Test avec plus de donnees clients
+
 ##Nettoyage des fichiers de donnees
 #Chargement des donnees
 client1 = read.csv("Clients_1.csv", header=T, sep=",", dec='.')

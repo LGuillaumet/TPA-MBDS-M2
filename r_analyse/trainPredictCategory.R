@@ -1,12 +1,13 @@
 library("rstudioapi")
 library("C50")
 
-setwd(dirname(getActiveDocumentContext()$path))
-getwd()
+# setwd(dirname(getActiveDocumentContext()$path))
+# getwd()
 
 ##Test de prediction
 #Chargement des donnees
-category = read.csv("cluster.csv", header=T, sep=",", dec='.', stringsAsFactors = T)
+#Utiliser le fichier "cluster.csv"
+category = read.csv(file.choose(), header=T, sep=",", dec='.', stringsAsFactors = T)
 category$cluster = as.factor(category$cluster)
 
 table(category$cluster)
