@@ -16,11 +16,12 @@ public class DatalakeClientsTask {
 
     private static final String clientQuery = "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
             "from mongodb.datalake.clients" + " " +
-            "union distinct" + " " +
+            "union all" + " " +
             "select age, sexe, taux, situation, nbchildren, havesecondcar, registrationid" + " " +
             "from hive.datalake.clients";
 
     public static void task(SparkSession spark, IClientsSparkTask sparkTask){
+
         Dataset<ClientDto> dataset = spark.read()
                 .format("jdbc")
                 .option("url", URL_PRESTO)

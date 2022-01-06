@@ -9,16 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>marketing</artifactId>
-    <packaging>jar</packaging>
-    <dependencies>
-        <dependency>
-            <groupId>org.mbds</groupId>
-            <artifactId>share</artifactId>
-            <version>1</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+    <artifactId>stats</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -40,7 +31,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        org.mbds.marketing.Main
+                                        org.mbds.stats.Main
                                     </mainClass>
                                 </manifest>
                             </archive>
