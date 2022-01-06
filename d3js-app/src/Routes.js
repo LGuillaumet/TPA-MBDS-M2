@@ -8,6 +8,7 @@ import {
 import { Home } from './pages/Home';
 import { DataViz } from './pages/DataViz';
 import { About } from './pages/About';
+import { Prediction } from './pages/Prediction';
 
 
 const RoutesApp = () => (
@@ -17,6 +18,7 @@ const RoutesApp = () => (
 		</Route>
 		<Route path="dataviz" element={<DataViz />} />
 		<Route path="about" element={<About />} />
+		<Route path="prediction" element={<Prediction />} />
 	</Routes>
 );
 

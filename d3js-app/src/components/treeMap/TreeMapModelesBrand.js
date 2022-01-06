@@ -47,7 +47,7 @@ export const TreeMapModelesBrand = ({ brand }) => {
 
 
 	const { data: dataNumberModeles, refetch, isFetching: isLoading, isSuccess } =
-		useQuery('numberModeles', () => fetchNumberModelesBrand(brand), {
+		useQuery(`numberModeles${brand}`, () => fetchNumberModelesBrand(brand), {
 			enabled: !!brand,
 		});
 

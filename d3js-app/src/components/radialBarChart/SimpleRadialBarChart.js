@@ -14,7 +14,7 @@ const style = {
 
 export const SimpleRadialBand = ({ brand }) => {
 
-	const { data: dataUserProfile, refetch, isFetching: isLoading, isSuccess } = useQuery('lambdaRadialBar', () => fetchUserProfilByBrand(brand), {
+	const { data: dataUserProfile, refetch, isFetching: isLoading, isSuccess } = useQuery(`lambdaRadialBar${brand}`, () => fetchUserProfilByBrand(brand), {
 		enabled: !!brand,
 	});
 

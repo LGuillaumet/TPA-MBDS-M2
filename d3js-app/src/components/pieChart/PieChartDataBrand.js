@@ -7,7 +7,7 @@ import { fetchRatioBrand } from '../../api/requests/brand';
 
 export const PieChartDataBrand = ({ brand }) => {
 
-	const { data: dataRatioType, refetch, isFetching: isLoading, isSuccess } = useQuery('ratioType', () => fetchRatioBrand(brand), {
+	const { data: dataRatioType, refetch, isFetching: isLoading, isSuccess } = useQuery(`ratioType${brand}`, () => fetchRatioBrand(brand), {
 		enabled: !!brand,
 	});
 
@@ -28,6 +28,7 @@ export const PieChartDataBrand = ({ brand }) => {
 
 	return (
 		<>
+		<h1>{brand}</h1>
 			<ResponsiveContainer width={"100%"} height={400}>
 				<PieChart width={400} height={400}>
 					<Pie
