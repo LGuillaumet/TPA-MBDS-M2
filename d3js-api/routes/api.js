@@ -51,9 +51,36 @@ router.get('/listall', async (req, res) => {
     res.json(ret);
 });
 
+router.get('/getPredictionByIdMarketing/:idmarketing', async (req, res) => {
+    const { idmarketing } = req.params;
+
+    const predictionTypeCar = await
+        knex.select('*')
+            .from('datawarehouse.marketingtypecarsprediction_ml as ml')
+            .join('datawarehouse.typecategories AS t', 't.id', 'ml.idpredictioncategorietype')
+            .where('idmarketing', idmarketing);
+
+    const ret = {};
+
+    predictionTypeCar.forEach((prediction) => {
+        const name = [labelType[prediction.name]]
+        if (ret[name]) {
+            ret[name] =
+                [...ret[name], prediction];
+        }
+        else {
+            ret[name] = [prediction];
+
+        }
+    });
+    res.json(ret);
+
+});
+
+
 router.get('/listPredictionTypeCar', async (req, res) => {
     const predictionTypeCar = await
-        knex.select('m.*', 't.*').from('datawarehouse.marketing AS m').join(
+        knex.select('p.idmarketing', 'm.*', 't.*').from('datawarehouse.marketing AS m').join(
             'datawarehouse.marketingtypecarsprediction AS p', 'p.idmarketing', 'm.id').join(
                 'datawarehouse.typecategories AS t', 't.id', 'p.idpredictioncategorietype');
 
