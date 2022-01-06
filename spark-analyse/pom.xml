@@ -13,6 +13,9 @@
         <module>clients</module>
         <module>cars</module>
         <module>co2</module>
+        <module>marketing</module>
+        <module>share</module>
+        <module>stats</module>
     </modules>
 
     <properties>

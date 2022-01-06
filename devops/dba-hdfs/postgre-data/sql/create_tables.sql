@@ -25,6 +25,27 @@ CREATE TABLE if not exists datawarehouse.marketing(
 	CONSTRAINT marketing_PK PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
+CREATE TABLE if not exists datawarehouse.marketingtypecarsprediction(
+	idmarketing					text,
+	idpredictioncategorietype   integer,
+	CONSTRAINT marketingtypecarsprediction_marketing_FK FOREIGN KEY (idmarketing) REFERENCES datawarehouse.marketing(id),
+	CONSTRAINT marketingtypecarsprediction_types_FK FOREIGN KEY (idpredictioncategorietype) REFERENCES datawarehouse.typecategories(id)
+);
+
+CREATE INDEX if not exists marketingtypecarsprediction_marketing_idx ON datawarehouse.marketingtypecarsprediction (idmarketing);
+CREATE INDEX if not exists marketingtypecarsprediction_type_idx ON datawarehouse.marketingtypecarsprediction (idpredictioncategorietype);
+
+CREATE TABLE if not exists datawarehouse.marketingtypecarsprediction_ml(
+	idmarketing					text,
+	idpredictioncategorietype   integer,
+	prediction					double precision,
+	CONSTRAINT marketingtypecarsprediction_marketing_FK FOREIGN KEY (idmarketing) REFERENCES datawarehouse.marketing(id),
+	CONSTRAINT marketingtypecarsprediction_types_FK FOREIGN KEY (idpredictioncategorietype) REFERENCES datawarehouse.typecategories(id)
+);
+
+CREATE INDEX if not exists marketingtypecarsprediction_ml_marketing_idx ON datawarehouse.marketingtypecarsprediction_ml (idmarketing);
+CREATE INDEX if not exists marketingtypecarsprediction_ml_type_idx ON datawarehouse.marketingtypecarsprediction_ml (idpredictioncategorietype);
+
 CREATE TABLE if not exists datawarehouse.cars(
 	id              bigint,
 	marque          VARCHAR (50) NOT NULL,
@@ -87,8 +108,72 @@ CREATE TABLE if not exists datawarehouse.carscategories(
 	longueur 		VARCHAR (50),
 	nbplaces        integer,
 	nbportes    	integer,
-	idCategorieType	integer,
-	CONSTRAINT carscategories_type_FK FOREIGN KEY (idCategorieType) REFERENCES datawarehouse.typecategories(id)
+	idcategorietype	integer,
+	CONSTRAINT carscategories_type_FK FOREIGN KEY (idcategorietype) REFERENCES datawarehouse.typecategories(id)
 );
 
 CREATE INDEX if not exists carscategories_cars_idx ON datawarehouse.carscategories (puissance, longueur, nbplaces, nbportes);
+
+CREATE TABLE if not exists datawarehouse.carmarque_total_stats(
+	marque       		text,
+	q0age 				double precision,
+    q1age 				double precision,
+    q2age 				double precision,
+    q3age 				double precision,
+    q4age 				double precision,
+    q0taux 				double precision,
+    q1taux 				double precision,
+    q2taux 				double precision,
+    q3taux 				double precision,
+    q4taux 				double precision,
+    q0nbchildren 		double precision,
+    q1nbchildren 		double precision,
+    q2nbchildren 		double precision,
+    q3nbchildren 		double precision,
+    q4nbchildren 		double precision
+);
+
+CREATE TABLE if not exists datawarehouse.carmarque_age_stats(
+	marque       		text,
+	age					bigint,
+    q0taux 				double precision,
+    q1taux 				double precision,
+    q2taux 				double precision,
+    q3taux 				double precision,
+    q4taux 				double precision,
+    q0nbchildren 		double precision,
+    q1nbchildren 		double precision,
+    q2nbchildren 		double precision,
+    q3nbchildren 		double precision,
+    q4nbchildren 		double precision
+);
+
+CREATE TABLE if not exists datawarehouse.carmarque_taux_stats(
+	marque       		text,
+	taux				bigint,
+	q0age 				double precision,
+    q1age 				double precision,
+    q2age 				double precision,
+    q3age 				double precision,
+    q4age 				double precision,
+    q0nbchildren 		double precision,
+    q1nbchildren 		double precision,
+    q2nbchildren 		double precision,
+    q3nbchildren 		double precision,
+    q4nbchildren 		double precision
+);
+
+CREATE TABLE if not exists datawarehouse.carmarque_nbchildren_stats(
+	marque       		text,
+	nbchildren			bigint,
+	q0age 				double precision,
+    q1age 				double precision,
+    q2age 				double precision,
+    q3age 				double precision,
+    q4age 				double precision,
+    q0taux 				double precision,
+    q1taux 				double precision,
+    q2taux 				double precision,
+    q3taux 				double precision,
+    q4taux 				double precision
+);
