@@ -7,7 +7,7 @@ let source = "public";
 const labelType = {
     Short_nbpo_3_nbpl_5: 'Sous-compactes',
     Medium_nbpo_5_nbpl_5: 'Compactes',
-    Long_nbpo_5_nbpl_5:  'Berlines',
+    Long_nbpo_5_nbpl_5: 'Berlines',
     Short_nbpo_5_nbpl_5: 'Citadines',
     VeryLong_nbpo_5_nbpl_5: 'Grandes Berlines',
     Long_nbpo_5_nbpl_7: 'Monospaces'
@@ -40,14 +40,52 @@ router.get('/listall', async (req, res) => {
     const ret = [];
 
     carbon.forEach((carCarbon) => {
-        ret.push({
-            nomMarque: carCarbon.marque,
-            pollution: carCarbon.rejet,
-            proportion: registrationsCars.filter((car) => car.marque === carCarbon.marque).length / registrationsCars.length * 100,
-        });
+        if (carCarbon.rejet > 0) {
+            ret.push({
+                nomMarque: carCarbon.marque,
+                pollution: carCarbon.rejet,
+            });
+        }
     });
 
     res.json(ret);
+});
+
+router.get('/listPredictionTypeCar', async (req, res) => {
+    const predictionTypeCar = await
+        knex.select('m.*', 't.*').from('datawarehouse.marketing AS m').join(
+            'datawarehouse.marketingtypecarsprediction AS p', 'p.idmarketing', 'm.id').join(
+                'datawarehouse.typecategories AS t', 't.id', 'p.idpredictioncategorietype');
+
+    const ret = {};
+
+    predictionTypeCar.forEach((prediction) => {
+        const name = [labelType[prediction.name]]
+        if (ret[name]) {
+            ret[name] =
+                [...ret[name], prediction];
+        }
+        else {
+            ret[name] = [prediction];
+
+        }
+    });
+    res.json(ret);
+
+});
+
+router.get('/userQBrand/:brand', async (req, res) => {
+    const { brand } = req.params;
+
+    const clients = await knex('datawarehouse.carmarque_total_stats').where({ marque: brand.toUpperCase() });
+
+    if (clients.length <= 0) {
+        res.json({ error: 'Marque non trouvée' });
+        return;
+    }
+
+    res.json(clients);
+
 });
 
 router.get('/filter', async (req, res) => {
@@ -320,10 +358,10 @@ router.get('/ratio/:brand', async (req, res) => {
     const cars = [...catalogueCars, ...registrationsCars];
 
     carscategories.forEach((category) => {
-        const carsLongueur = cars.filter((car) => car.longueur === category.longueur).length / cars.length * 100;
+        const carsLongueur = cars.filter((car) => car.longueur === category.longueur);
         const carType = typeCategories.find((type) => type.id === category.idcategorietype);
-        if(carsLongueur > 0) {
-        ret[labelType[carType.name]] = carsLongueur;
+        if (carsLongueur.length > 0) {
+            ret[labelType[carType.name]] = carsLongueur.length;
         }
     });
 
