@@ -72,8 +72,7 @@ CREATE TABLE if not exists datawarehouse.carbon(
 	bonusmalus      float,
 	rejet           float,
 	coutenergie		float,
-	CONSTRAINT carbon_PK PRIMARY KEY (marque),
-	CONSTRAINT carbon_cars_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
+	CONSTRAINT carbon_PK PRIMARY KEY (marque)
 )  WITHOUT OIDS;
 
 CREATE TABLE if not exists datawarehouse.typecategories(
@@ -131,8 +130,7 @@ CREATE TABLE if not exists datawarehouse.carmarque_total_stats(
     q1nbchildren 		double precision,
     q2nbchildren 		double precision,
     q3nbchildren 		double precision,
-    q4nbchildren 		double precision,
-	CONSTRAINT carmarque_total_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
+    q4nbchildren 		double precision
 );
 
 CREATE TABLE if not exists datawarehouse.carmarque_age_stats(
@@ -147,8 +145,7 @@ CREATE TABLE if not exists datawarehouse.carmarque_age_stats(
     q1nbchildren 		double precision,
     q2nbchildren 		double precision,
     q3nbchildren 		double precision,
-    q4nbchildren 		double precision,
-	CONSTRAINT carmarque_age_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
+    q4nbchildren 		double precision
 );
 
 CREATE TABLE if not exists datawarehouse.carmarque_taux_stats(
@@ -163,8 +160,7 @@ CREATE TABLE if not exists datawarehouse.carmarque_taux_stats(
     q1nbchildren 		double precision,
     q2nbchildren 		double precision,
     q3nbchildren 		double precision,
-    q4nbchildren 		double precision,
-	CONSTRAINT carmarque_taux_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
+    q4nbchildren 		double precision
 );
 
 CREATE TABLE if not exists datawarehouse.carmarque_nbchildren_stats(
@@ -179,6 +175,5 @@ CREATE TABLE if not exists datawarehouse.carmarque_nbchildren_stats(
     q1taux 				double precision,
     q2taux 				double precision,
     q3taux 				double precision,
-    q4taux 				double precision,
-	CONSTRAINT carmarque_nbchildren_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
+    q4taux 				double precision
 );

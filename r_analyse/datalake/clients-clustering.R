@@ -19,8 +19,6 @@ library(rJava)
 library(RJDBC)
 library('RPostgres');
 
-install.packages(c("rhdfs"), repos="http://cran.r-project.org/")
-
 setwd(dirname(getActiveDocumentContext()$path))
 wd <- getwd()
 
@@ -101,7 +99,7 @@ clients = clients %>% drop_na()
 sum(is.na(clients))
 
 ##
-# Recuperation des résultats de classification véhicule et jointure entre les dataframes categories, immatriculation et clients
+# Recuperation des r�sultats de classification v�hicule et jointure entre les dataframes categories, immatriculation et clients
 ##
 
 data <- dbGetQuery(presto_jdbc, "select * from postegres.datawarehouse.carscategories")
@@ -146,6 +144,7 @@ dataVal$idcategorietype<-as.factor(dataVal$idcategorietype)
 # Utilisation de C50
 # On explique cluster en fonction des variables explicatives (nbEnfantsAcharge, situationFamiliale, X2eme.voiture, taux)
 ##
+dataTrain
 
 modelClient = C5.0(idcategorietype~nbchildren + situation  + havesecondcar + taux, dataTrain)
 
@@ -170,6 +169,8 @@ successClientPrediction = nrow(dataVal[dataVal$idcategorietype == dataVal$predic
 
 marketing <- dbGetQuery(presto_jdbc, "select * from cassandra.datalake.marketing")
 
+marketing
+
 marketing$situation[marketing$situation == "Célibataire" | marketing$situation == "Seul" | marketing$situation == "Seule"] = "Single"
 marketing$situation[marketing$situation == "En Couple"] = "Couple"
 marketing$situation = as.factor(marketing$situation)
@@ -185,13 +186,13 @@ marketing$idpredictioncategorietype = as.integer(predictModelmarketing)
 marketing <- marketing %>%
   select(c(-age, -havesecondcar, -nbchildren , -sexe, -situation, -taux))
 
-# clean la datable avant d'écrire pour override
+# clean la datable avant d'�crire pour override
 dbExecute(con, "delete from datawarehouse.marketingtypecarsprediction")
 
 # renomme le champ pour match avec la table dans postgres
 names(marketing)[names(marketing) == "id"] <- "idmarketing"
 
-# écrit le résultat dans la table marketingtypecarsprediction de postgres
+# �crit le r�sultat dans la table marketingtypecarsprediction de postgres
 dbWriteTable(con, Id(schema = "datawarehouse", table = "marketingtypecarsprediction"), value = marketing, append = TRUE)
 
 dbDisconnect(presto_jdbc)
