@@ -29,6 +29,9 @@ export const NavBar = () => {
 							<Link to="/dataviz" replace >Data visualization</Link> |{" "}
 						</NavItem>
 						<NavItem>
+							<Link to="/prediction" replace >Prediction</Link> |{" "}
+						</NavItem>
+						<NavItem>
 							<Link to="/about" replace >About</Link>
 						</NavItem>
 					</Nav>

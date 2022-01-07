@@ -7,3 +7,5 @@ export const fetchFilterAllBrands = (params) => request(`/filter?portes=${params
 export const fetchRatioBrand = (brand) => request(`/ratio/${brand}`);
 
 export const fetchNumberModelesBrand = (brand) => request(`/numberModeles/${brand}`);
+
+export const fetchListPollutionBrands = () => request(`/listall`);

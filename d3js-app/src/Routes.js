@@ -7,7 +7,7 @@ import {
 // import your route components too
 import { Home } from './pages/Home';
 import { DataViz } from './pages/DataViz';
-import { About } from './pages/About';
+import { Prediction } from './pages/Prediction';
 
 
 const RoutesApp = () => (
@@ -16,7 +16,7 @@ const RoutesApp = () => (
 			<Route index element={<Home />} />
 		</Route>
 		<Route path="dataviz" element={<DataViz />} />
-		<Route path="about" element={<About />} />
+		<Route path="prediction" element={<Prediction />} />
 	</Routes>
 );
 

@@ -83,7 +83,6 @@ export const Home = () => {
 						<Row className="justify-content-center mt-3">
 							<Col xs="12" sm="12" md="12" lg="12" xl="12">
 								<h4>Technologies utilisées</h4>
-								<p>Le groupe est composé des membres suivants :</p>
 								<CardGroup className="Techs justify-content-center">
 									<Card className="">
 										<CardImg

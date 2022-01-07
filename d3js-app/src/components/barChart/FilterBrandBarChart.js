@@ -9,7 +9,7 @@ import { fetchFilterAllBrands } from '../../api/requests/brand';
 
 import { Colors } from '../../lib/colors';
 
-export const FilterBrandBarChart = ({ brand }) => {
+export const FilterBrandBarChart = ({ setBrand }) => {
 	const [params, setParams] = useState(
 		{
 			doors: [],
@@ -28,6 +28,7 @@ export const FilterBrandBarChart = ({ brand }) => {
 	const { data: dataFilter, refetch: getWithFilter, isFetching: isLoadingFilter } = useQuery('filter', () => fetchFilterAllBrands(params));
 
 	const handleSearch = () => {
+		
 		getWithFilter();
 	};
 	const formatTick = (tickItem) => {
@@ -151,7 +152,7 @@ export const FilterBrandBarChart = ({ brand }) => {
 							>
 								{
 									!dataFilter?.data.error ? dataFilter?.data.map((entry, index) => (
-										<Cell key={`cell-${index}`} fill={Colors[index % Colors.length]} />
+										<Cell onClick={() => setBrand(entry.marque)} key={`cell-${index}`} fill={Colors[index % Colors.length]} />
 									))
 										: null
 								}

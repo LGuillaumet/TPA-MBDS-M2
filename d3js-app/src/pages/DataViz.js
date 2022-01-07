@@ -5,9 +5,9 @@ import { useQuery } from 'react-query';
 
 import { NavBar } from '../components/NavBar';
 import { PieChartDataBrand } from '../components/pieChart/PieChartDataBrand';
-import { SimpleRadialBand } from '../components/radialBarChart/SimpleRadialBarChart';
+import { ListBoxPlot } from '../components/boxPlot/ListBoxPlot';
 import { FilterBrandBarChart } from '../components/barChart/FilterBrandBarChart';
-import { TreeMap } from '../components/treeMap/CustomTreeMap';
+import { PolutionTreeMap } from '../components/treeMap/PolutionTreeMap';
 import { TreeMapModelesBrand } from '../components/treeMap/TreeMapModelesBrand';
 
 import { SimpleRadarChart } from '../components/radarChart/SimpleRadarChart';
@@ -18,10 +18,17 @@ import './DataViz.scss';
 
 export const DataViz = () => {
 	const [brand, setBrand] = useState(null);
+	const [brandCompare, setBrandComapre] = useState(null);
+
+
 	const [compare, setCompare] = useState(false);
 
 	const onchangeSelect = (item) => {
 		setBrand(item.value);
+	};
+
+	const onchangeSelectCompare = (item) => {
+		setBrandComapre(item.value);
 	};
 
 	const { data: optionsBrands } = useQuery('brands', fetchAllBrands);
@@ -46,9 +53,10 @@ export const DataViz = () => {
 						/>
 					</div>
 					<Row xs="12" className="justify-content-center">
-						<Col className="mx-1 datavizCol">
+						<Col className="mx-1 datavizCol" key="1">
 							<h6>Marque : {brand}</h6>
 							<Select
+								value={brand}
 								onChange={onchangeSelect}
 								options={optionsBrands?.data.marques.map(v => ({
 									label: v,
@@ -62,36 +70,41 @@ export const DataViz = () => {
 								<Col className="border p-0">
 									<TreeMapModelesBrand brand={brand} />
 								</Col>
+							</Row>
+							<Row>
 								<Col className="border p-0">
-									<SimpleRadialBand brand={brand} />
-								</Col>
-								<Col className="border p-0">
-									<SimpleRadarChart />
+									<ListBoxPlot brand={brand} />
+
 								</Col>
 							</Row>
 						</Col>
 						{compare && (
-							<Col className="mx-1">
+							<Col className="mx-1 datavizCol" key="2">
 								<Fade in={compare}>
-									<h6>Marque : {brand}</h6>
+									<h6>Marque : {brandCompare}</h6>
 									<Select
-										onChange={onchangeSelect}
-										options={optionsBrands}
+										value={brandCompare}
+										onChange={onchangeSelectCompare}
+										options={optionsBrands?.data.marques.map(v => ({
+											label: v,
+											value: v
+										}))}
 									/>
 									<Row xs="2">
 										<Col className="border p-0">
-											<PieChartDataBrand />
+											<PieChartDataBrand key="2" brand={brandCompare} />
 										</Col>
 										<Col className="border p-0">
-											<TreeMapModelesBrand brand={brand} />
-										</Col>
-										<Col className="border p-0">
-											<SimpleRadialBand />
-										</Col>
-										<Col className="border p-0">
-											<SimpleRadarChart />
+											<TreeMapModelesBrand brand={brandCompare} />
 										</Col>
 									</Row>
+
+									<Row>
+										<Col className="border p-0">
+											<ListBoxPlot brand={brandCompare} />
+										</Col>
+									</Row>
+
 								</Fade>
 
 							</Col>
@@ -99,8 +112,8 @@ export const DataViz = () => {
 						<h6>
 							Bar Chart
 						</h6>
-						<FilterBrandBarChart />
-						<TreeMap />
+						<FilterBrandBarChart setBrand={setBrand} />
+						<PolutionTreeMap />
 
 					</Row>
 				</Col>
