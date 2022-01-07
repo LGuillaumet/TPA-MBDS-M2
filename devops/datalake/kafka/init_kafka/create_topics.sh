@@ -5,6 +5,7 @@ echo "Waiting start broker."
 /usr/local/share/landoop/wait-scripts/wait-for-kafka.sh
 
 echo "Create topic if not exists."
+sleep 10
 
 /opt/landoop/kafka/bin/kafka-topics --create --if-not-exists --zookeeper localhost:3181 --partitions 4 --replication-factor 1 --topic upserts-marketing-cassandra
 /opt/landoop/kafka/bin/kafka-topics --create --if-not-exists --zookeeper localhost:3181 --partitions 10 --replication-factor 1 --topic upserts-registration-cassandra

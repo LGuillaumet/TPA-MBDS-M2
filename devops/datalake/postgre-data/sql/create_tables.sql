@@ -1,51 +1,5 @@
 CREATE SCHEMA if not exists datawarehouse;
 
-CREATE TABLE if not exists datawarehouse.clients(
-	id               bigint,
-	age              integer,
-	sexe             VARCHAR(1),
-	situation        VARCHAR(50),
-	nbchildren 		 integer,
-	taux             integer,
-	havesecondcar    BOOL,
-	registrationid   VARCHAR (50),
-	CONSTRAINT clients_PK PRIMARY KEY (id)
-) WITHOUT OIDS;
-
-CREATE INDEX if not exists clients_registration_idx ON datawarehouse.clients (registrationid);
-
-CREATE TABLE if not exists datawarehouse.marketing(
-	id               text,
-	age              integer,
-	sexe             VARCHAR(1),
-	situation        VARCHAR(50),
-	nbchildren 		 integer,
-	taux             integer,
-	havesecondcar    BOOL,
-	CONSTRAINT marketing_PK PRIMARY KEY (id)
-) WITHOUT OIDS;
-
-CREATE TABLE if not exists datawarehouse.marketingtypecarsprediction(
-	idmarketing					text,
-	idpredictioncategorietype   integer,
-	CONSTRAINT marketingtypecarsprediction_marketing_FK FOREIGN KEY (idmarketing) REFERENCES datawarehouse.marketing(id),
-	CONSTRAINT marketingtypecarsprediction_types_FK FOREIGN KEY (idpredictioncategorietype) REFERENCES datawarehouse.typecategories(id)
-);
-
-CREATE INDEX if not exists marketingtypecarsprediction_marketing_idx ON datawarehouse.marketingtypecarsprediction (idmarketing);
-CREATE INDEX if not exists marketingtypecarsprediction_type_idx ON datawarehouse.marketingtypecarsprediction (idpredictioncategorietype);
-
-CREATE TABLE if not exists datawarehouse.marketingtypecarsprediction_ml(
-	idmarketing					text,
-	idpredictioncategorietype   integer,
-	prediction					double precision,
-	CONSTRAINT marketingtypecarsprediction_marketing_FK FOREIGN KEY (idmarketing) REFERENCES datawarehouse.marketing(id),
-	CONSTRAINT marketingtypecarsprediction_types_FK FOREIGN KEY (idpredictioncategorietype) REFERENCES datawarehouse.typecategories(id)
-);
-
-CREATE INDEX if not exists marketingtypecarsprediction_ml_marketing_idx ON datawarehouse.marketingtypecarsprediction_ml (idmarketing);
-CREATE INDEX if not exists marketingtypecarsprediction_ml_type_idx ON datawarehouse.marketingtypecarsprediction_ml (idpredictioncategorietype);
-
 CREATE TABLE if not exists datawarehouse.cars(
 	id              bigint,
 	marque          VARCHAR (50) NOT NULL,
@@ -59,7 +13,6 @@ CREATE TABLE if not exists datawarehouse.cars(
 	CONSTRAINT cars_PK PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
-CREATE UNIQUE INDEX if not exists cars_unique_idx ON datawarehouse.cars (marque, nom, puissance, longueur, nbplaces, nbportes, couleur);
 CREATE INDEX if not exists cars_char_idx ON datawarehouse.cars (puissance, longueur, nbplaces, nbportes);
 CREATE INDEX if not exists cars_marque_idx ON datawarehouse.cars (marque);
 CREATE INDEX if not exists cars_nom_idx ON datawarehouse.cars (nom);
@@ -89,12 +42,38 @@ CREATE TABLE if not exists datawarehouse.catalogue(
 
 CREATE INDEX if not exists catalogue_cars_idx ON datawarehouse.registrations (idCar);
 
+CREATE TABLE if not exists datawarehouse.clients(
+	id               bigint,
+	age              integer,
+	sexe             VARCHAR(1),
+	situation        VARCHAR(50),
+	nbchildren 		 integer,
+	taux             integer,
+	havesecondcar    BOOL,
+	registrationid   VARCHAR (50),
+	CONSTRAINT clients_PK PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+CREATE INDEX if not exists clients_registration_idx ON datawarehouse.clients (registrationid);
+
+CREATE TABLE if not exists datawarehouse.marketing(
+	id               text,
+	age              integer,
+	sexe             VARCHAR(1),
+	situation        VARCHAR(50),
+	nbchildren 		 integer,
+	taux             integer,
+	havesecondcar    BOOL,
+	CONSTRAINT marketing_PK PRIMARY KEY (id)
+) WITHOUT OIDS;
+
 CREATE TABLE if not exists datawarehouse.carbon(
 	marque          VARCHAR (50),
 	bonusmalus      float,
 	rejet           float,
 	coutenergie		float,
-	CONSTRAINT carbon_PK PRIMARY KEY (marque)
+	CONSTRAINT carbon_PK PRIMARY KEY (marque),
+	CONSTRAINT carbon_cars_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
 )  WITHOUT OIDS;
 
 CREATE TABLE if not exists datawarehouse.typecategories(
@@ -114,6 +93,28 @@ CREATE TABLE if not exists datawarehouse.carscategories(
 
 CREATE INDEX if not exists carscategories_cars_idx ON datawarehouse.carscategories (puissance, longueur, nbplaces, nbportes);
 
+
+CREATE TABLE if not exists datawarehouse.marketingtypecarsprediction(
+	idmarketing					text,
+	idpredictioncategorietype   integer,
+	CONSTRAINT marketingtypecarsprediction_marketing_FK FOREIGN KEY (idmarketing) REFERENCES datawarehouse.marketing(id),
+	CONSTRAINT marketingtypecarsprediction_types_FK FOREIGN KEY (idpredictioncategorietype) REFERENCES datawarehouse.typecategories(id)
+);
+
+CREATE INDEX if not exists marketingtypecarsprediction_marketing_idx ON datawarehouse.marketingtypecarsprediction (idmarketing);
+CREATE INDEX if not exists marketingtypecarsprediction_type_idx ON datawarehouse.marketingtypecarsprediction (idpredictioncategorietype);
+
+CREATE TABLE if not exists datawarehouse.marketingtypecarsprediction_ml(
+	idmarketing					text,
+	idpredictioncategorietype   integer,
+	prediction					double precision,
+	CONSTRAINT marketingtypecarsprediction_marketing_FK FOREIGN KEY (idmarketing) REFERENCES datawarehouse.marketing(id),
+	CONSTRAINT marketingtypecarsprediction_types_FK FOREIGN KEY (idpredictioncategorietype) REFERENCES datawarehouse.typecategories(id)
+);
+
+CREATE INDEX if not exists marketingtypecarsprediction_ml_marketing_idx ON datawarehouse.marketingtypecarsprediction_ml (idmarketing);
+CREATE INDEX if not exists marketingtypecarsprediction_ml_type_idx ON datawarehouse.marketingtypecarsprediction_ml (idpredictioncategorietype);
+
 CREATE TABLE if not exists datawarehouse.carmarque_total_stats(
 	marque       		text,
 	q0age 				double precision,
@@ -130,7 +131,8 @@ CREATE TABLE if not exists datawarehouse.carmarque_total_stats(
     q1nbchildren 		double precision,
     q2nbchildren 		double precision,
     q3nbchildren 		double precision,
-    q4nbchildren 		double precision
+    q4nbchildren 		double precision,
+	CONSTRAINT carmarque_total_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
 );
 
 CREATE TABLE if not exists datawarehouse.carmarque_age_stats(
@@ -145,7 +147,8 @@ CREATE TABLE if not exists datawarehouse.carmarque_age_stats(
     q1nbchildren 		double precision,
     q2nbchildren 		double precision,
     q3nbchildren 		double precision,
-    q4nbchildren 		double precision
+    q4nbchildren 		double precision,
+	CONSTRAINT carmarque_age_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
 );
 
 CREATE TABLE if not exists datawarehouse.carmarque_taux_stats(
@@ -160,7 +163,8 @@ CREATE TABLE if not exists datawarehouse.carmarque_taux_stats(
     q1nbchildren 		double precision,
     q2nbchildren 		double precision,
     q3nbchildren 		double precision,
-    q4nbchildren 		double precision
+    q4nbchildren 		double precision,
+	CONSTRAINT carmarque_taux_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
 );
 
 CREATE TABLE if not exists datawarehouse.carmarque_nbchildren_stats(
@@ -175,5 +179,6 @@ CREATE TABLE if not exists datawarehouse.carmarque_nbchildren_stats(
     q1taux 				double precision,
     q2taux 				double precision,
     q3taux 				double precision,
-    q4taux 				double precision
+    q4taux 				double precision,
+	CONSTRAINT carmarque_nbchildren_stats_car_FK FOREIGN KEY (marque) REFERENCES datawarehouse.cars(marque)
 );
