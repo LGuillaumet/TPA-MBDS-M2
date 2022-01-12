@@ -89,6 +89,3 @@ Example :
 - Java : https://prestodb.io/docs/current/installation/jdbc.html 
 - Node : https://github.com/tagomoris/presto-client-node
 - .NET : https://github.com/bamcis-io/PrestoClient
-
-
-

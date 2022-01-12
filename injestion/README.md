@@ -5,8 +5,8 @@
 
 ## Setup
 
-- Injestion des données :
-    - dezip fichier.zip
-    - cd injestion/DataInjestion/DataInjestion/publish
-    - edit appsettings.json => set path files and set isActive or not for upload
-    - execute DataInjestion.exe
+Il est nécessaire au préalable de dezip les fichiers CSV du projet et d'avoir le datalake de lancer
+
+- cd ./injestion/DataInjection/release-injestion
+- Modifier le fichier appsettings.json pour localiser chaque fichiers CSV et les liés à un topic kafka
+- DataInjestion.exe pour lancer l'injestion 
