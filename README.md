@@ -1,5 +1,9 @@
 ## TPA-MBDS-M2
 
+# Vidéo explication
+https://youtu.be/ByqajUCg2uE
+
+
 # Contexte du Projet
 Vous avez été contacté par un concessionnaire automobile afin de l'aider à mieux cibler les véhicules
 susceptibles d'intéresser ses clients. Pour cela il met à votre disposition :
